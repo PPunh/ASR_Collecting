@@ -1,0 +1,53 @@
+<!-- Top Navigation -->
+<nav class="w3-bar w3-white w3-card w3-fixed-top" style="height: 64px; z-index: 1000; display: flex; align-items: center;">
+    <div class="w3-container w3-cell-row w3-full">
+
+        <!-- Left: Brand -->
+        <div class="w3-cell w3-cell-middle">
+            <a href="{% url 'users:home' %}" class="w3-bar-item w3-button w3-hover-none w3-text-theme" style="display: flex; align-items: center; gap: 8px;">
+                <i class="fa fa-home w3-xlarge"></i>
+                <strong class="w3-large" style="letter-spacing: -0.5px;">ASR Collecting</strong>
+            </a>
+        </div>
+
+        <!-- Right: Desktop Menu -->
+        <div class="w3-cell w3-cell-middle w3-right w3-hide-small">
+            <a href="{% url 'users:home' %}"
+                class="w3-bar-item w3-button w3-round-large w3-margin-right w3-hover">
+                Home
+            </a>
+
+            <a href="{% url 'employies:list' %}"
+                class="w3-bar-item w3-button w3-round-large w3-margin-right w3-hover">
+                Users
+            </a>
+
+            <!-- Profile Dropdown -->
+            <div class="w3-dropdown-hover w3-transparent w3-theme w3-round-xlarge">
+                <button class="w3-button w3-round-large" style="display: flex; align-items: center; gap: 8px;">
+                    <div class="w3-circle w3-white" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                        {{ user.username|slice:":1"|upper }}
+                    </div>
+                    <span>{{ user.username }}</span>
+                    <span class="material-icons w3-small">expand_more</span>
+                </button>
+                <div class="w3-dropdown-content w3-padding w3-bar-block w3-card-4 w3-round-large w3-animate-opacity"
+                    style="right: 16px; min-width: 200px;">
+                    <a href="#" class="w3-bar-item w3-button w3-round-large">
+                        <i class="fa fa-user w3-margin-right"></i>
+                        Profile
+                    </a>
+                    <a href="{% url 'admin:index' %}" class="w3-bar-item w3-button w3-round-large">
+                        <i class="fa fa-gear w3-margin-right w3-spin"></i>
+                        Settings
+                    </a>
+                    <hr class="w3-clear" style="margin: 4px 0;">
+                    <a href="{% url 'users:logout' %}" class="w3-bar-item w3-button w3-round-large w3-text-red">
+                        <i class="fa fa-sign-out w3-margin-right"></i>
+                        Sign Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

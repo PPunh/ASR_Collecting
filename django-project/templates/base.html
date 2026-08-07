@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    <!-- Facicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/base-icon.png' %}">
+
+    <!-- CSS Framework & Themes -->
+    <link href="{% static 'css/w3/w3.css' %}" rel="stylesheet">
+    <link href="{% static 'css/w3/'|add:theme_color|default:'w3-theme-blue.css' %}" rel="stylesheet">
+
+    <!-- Custom & Fonts -->
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <link href="{% static 'fonts/lao/lao-font.css' %}" rel="stylesheet">
+
+    <!-- Icons (Optimized: Load only what you need, or bundle them) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Icons+Outlined&family=Material+Icons+Round" rel="stylesheet">
+
+    {% block css %}{% endblock %}
+</head>
+
+<body class="lao-noto">
+
+    {# Top Navigation #}
+    <nav class="w3-animate-top">
+        {% block main-navigation %}
+            {% if user.is_authenticated %}
+                {% include 'main-navigation.html' %}
+            {% endif %}
+        {% endblock %}
+    </nav>
+    <div class="w3-row w3-animate-left">
+        <nav>
+            {% block navigation_left %}{% endblock %}
+        </nav>
+
+        <main class="w3-main w3-container w3-animate-bottom" style="margin-left: 20%;">
+            {% block main-content %}{% endblock %}
+        </main>
+    </div>
+
+    <footer>
+        {% block footer %}{% endblock %}
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    {% block js %}
+        <script>
+            function myFunction() {
+              let x = document.body;
+              x.classList.toggle("w3-black");
+            }
+        </script>
+    {% endblock %}
+{% include "base_components/toast_messages.html" %}
+</body>
+</html>

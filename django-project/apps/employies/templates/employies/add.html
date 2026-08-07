@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block navigation_left %}
+    {% if user.is_authenticated %}
+        {% include 'employies/components/employies-sidebar.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block main-content %}
+<div class="w3-container">
+    <div class="w3-margin-top">
+        <form method="post", enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="w3-card w3-round-large w3-padding">
+                <h3 class="w3-panel w3-theme w3-padding w3-round-large">User information</h3>
+                {% include "snippets/form_generic.html" with form=form %}
+            </div>
+
+            <div class="w3-card w3-round-large w3-padding w3-margin-top">
+                <h3 class="w3-panel w3-theme w3-padding w3-round-large">Employies information</h3>
+                {% include "snippets/formset_generic.html" with formset=employee_formset %}
+            </div>
+
+            <div class="w3-container w3-padding-16 w3-right-align">
+                <a href="javascript:history.back()" class="w3-button w3-white w3-border w3-border-grey w3-round-large w3-margin-right">Cancel</a>
+                <button type="submit" class="w3-button w3-theme-dark w3-round-large w3-hover-shadow" style="padding:10px 32px">
+                    <i class="fa fa-save"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{ form.media }}
+    {{ employee_formset.media }}
+
+    <script>
+    $(document).ready(function() {
+        // บังคับให้ Smart Selects Re-bind ทุกครั้งที่ Province ใน Formset มีการเปลี่ยนค่า
+        $(document).on('change', "select[id$='-province']", function() {
+            var provinceSelect = $(this);
+            // ค้นหา District ที่อยู่ใน Row เดียวกัน
+            var districtSelect = provinceSelect.closest('.formset-row').find("select[id$='-district']");
+            
+            // Trigger change เพื่อให้ smart-selects ดึง AJAX
+            districtSelect.trigger('change');
+        });
+    });
+    </script>
+{% endblock %}

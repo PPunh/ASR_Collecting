@@ -1,0 +1,8 @@
+/* --- 1. Global Variables --- */
+:root {
+    --input-bg: #f8fafc;
+    --input-border: #e2e8f0;
+    --input-focus: var(--w3-theme, #2196F3);
+    --card-bg: #ffffff;
+    --error-color: #ef4444;
+}

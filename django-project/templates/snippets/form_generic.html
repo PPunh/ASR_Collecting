@@ -1,0 +1,53 @@
+{% load widget_tweaks %}
+
+{% for field in form %}
+    {% if field|widget_type == 'hiddeninput' %}
+        {{ field }}
+    {% else %}
+        {% if forloop.counter0|divisibleby:3 %}
+            {% if not forloop.first %}</div>{% endif %}
+            <div class="w3-row-padding w3-margin-bottom">
+        {% endif %}
+
+        <div class="{% if field|widget_type == 'textarea' %}w3-col s12{% else %}w3-col m4 s12{% endif %} w3-margin-bottom">
+            <div class="form-group">
+                <label class="form-label w3-text-dark-gray" for="{{ field.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; display: block;">
+                    {{ field.label|upper }}
+                    {% if field.field.required %}<span class="w3-text-red">*</span>{% endif %}
+                </label>
+
+                {% if field|widget_type == 'checkboxinput' %}
+                    {{ field|add_class:'modern-check' }}
+
+                {% elif field|widget_type == 'textarea' %}
+                    {{ field|add_class:'modern-field w3-input w3-border w3-round'|attr:'rows:3'|attr:'placeholder:Enter the details...' }}
+
+                {% elif field|widget_type == 'select' %}
+                    {{ field|add_class:'modern-field w3-select w3-border w3-round' }}
+
+                {% elif field|widget_type == 'chainedselect' %}
+                    {# django-smart-selects ChainedForeignKey field #}
+                    {{ field|add_class:'modern-field w3-select w3-border w3-round chained-field' }}
+
+                {% elif field|widget_type == 'dateinput' %}
+                    {{ field|add_class:'modern-field w3-input w3-border w3-round'|attr:'type:date' }}
+
+                {% elif field|widget_type == 'passwordinput' %}
+                    {{ field|add_class:'modern-field w3-input w3-border w3-round'|attr:'placeholder:**********' }}
+
+                {% else %}
+                    {{ field|add_class:'modern-field w3-input w3-border w3-round'|attr:'placeholder:Enter details...' }}
+                {% endif %}
+
+                {% if field.errors %}
+                    <span class="error-text w3-text-red w3-tiny" style="display: block; margin-top: 4px;">
+                        <i class="material-icons" style="font-size: 12px; vertical-align: middle;">error_outline</i>
+                        {{ field.errors.0 }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if forloop.last %}</div>{% endif %}
+    {% endif %}
+{% endfor %}

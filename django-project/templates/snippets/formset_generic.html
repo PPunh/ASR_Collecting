@@ -1,0 +1,81 @@
+{% load widget_tweaks %}
+
+{{ formset.management_form }}
+
+<div id="formset-container">
+    {% for form in formset %}
+        <div class="formset-row w3-white w3-round-large w3-padding w3-margin-bottom w3-animate-opacity">
+            
+            <div class="w3-padding-small w3-light-grey w3-round-large w3-margin-bottom">
+                {% if formset.can_delete and form.DELETE %}
+                    <div class="delete-checkbox w3-padding-small w3-round" style="background-color: #ffebee;">
+                            {{ form.DELETE|add_class:'w3-check' }} DELETE
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="w3-panel w3-pale-red w3-leftbar w3-border-red w3-round-large w3-tiny w3-padding-small w3-margin-bottom">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- Form Fields Grid (3 Fields / Row) -->
+            {% for field in form %}
+                {% if field|widget_type == 'hiddeninput' or field.name == 'DELETE' %}
+                    {% if field.name != 'DELETE' %}{{ field }}{% endif %}
+                {% else %}
+                    {% if forloop.counter0|divisibleby:3 %}
+                        {% if not forloop.first %}</div>{% endif %}
+                        <div class="w3-row-padding">
+                    {% endif %}
+
+                    <div class="{% if field|widget_type == 'textarea' %}w3-col s12{% else %}w3-col m4 s12{% endif %} w3-margin-bottom">
+                        <div class="form-group">
+                            <label class="form-label w3-text-dark-gray" for="{{ field.id_for_label }}" style="font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; display: block;">
+                                {{ field.label|upper }}
+                                {% if field.field.required %}<span class="w3-text-red">*</span>{% endif %}
+                            </label>
+
+                            {% if field|widget_type == 'checkboxinput' %}
+                                <div class="w3-padding-small w3-border w3-round-large w3-light-grey" style="display: flex; align-items: center; min-height: 40px;">
+                                    {{ field|add_class:'modern-check' }}
+                                    <span class="w3-margin-left w3-small" style="font-weight: 600;">{{ field.label }}</span>
+                                </div>
+
+                            {% elif field|widget_type == 'textarea' %}
+                                {{ field|add_class:'modern-field w3-input w3-border w3-round-large'|attr:'rows:2'|attr:'placeholder:Enter details...' }}
+
+                            {% elif field|widget_type == 'select' %}
+                                {{ field|add_class:'modern-field w3-select w3-border w3-round-large' }}
+
+                            {% elif field|widget_type == 'chainedselect' %}
+                                {# django-smart-selects ChainedForeignKey field #}
+                                {{ field|add_class:'modern-field w3-select w3-border w3-round-large chained-field' }}
+
+                            {% elif field|widget_type == 'dateinput' %}
+                                {{ field|add_class:'modern-field w3-input w3-border w3-round-large'|attr:'type:date' }}
+
+                            {% elif field|widget_type == 'passwordinput' %}
+                                {{ field|add_class:'modern-field w3-input w3-border w3-round-large'|attr:'placeholder:**********' }}
+
+                            {% else %}
+                                {{ field|add_class:'modern-field w3-input w3-border w3-round-large'|attr:'placeholder:Enter details...' }}
+                            {% endif %}
+
+                            {% if field.errors %}
+                                <span class="error-text w3-text-red w3-tiny" style="display: block; margin-top: 4px;">
+                                    <i class="material-icons" style="font-size: 12px; vertical-align: middle;">error_outline</i>
+                                    {{ field.errors.0 }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if forloop.last %}</div>{% endif %}
+                {% endif %}
+            {% endfor %}
+
+        </div>
+    {% endfor %}
+</div>
