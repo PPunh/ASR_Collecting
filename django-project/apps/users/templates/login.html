@@ -28,16 +28,9 @@
             <!-- Header & Logo Section -->
             <div class="w3-center w3-margin-bottom">
                 <div class="w3-container">
-                    {% if platform.site_icon %}
-                        <img src="{{ platform.site_icon.url }}" 
-                             alt="{{ platform.site_name|default:'Site Icon' }}" 
-                             class="w3-image w3-round" 
-                             style="max-width: 64px; max-height: 64px; object-fit: contain;">
-                    {% else %}
-                        <span class="material-icons-round w3-xxlarge w3-text-theme" style="font-size: 64px;">
-                            task_alt
-                        </span>
-                    {% endif %}
+                <img src="{% static 'images/alo.png' %}"  
+                     class="w3-image w3-round" 
+                     style="max-width: 300px; max-height: 100px; object-fit: contain;">
                 </div>
                 <h2 class="lao-noto w3-xlarge w3-text-grey">
                     <strong class="w3-bold">ASR</strong>

@@ -1,11 +1,14 @@
+{% load static %}
 <!-- Top Navigation -->
 <nav class="w3-bar w3-white w3-card w3-top" style="height: 64px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; overflow: visible !important; z-index: 1000;">
     
     <!-- Left: Brand -->
     <div class="w3-flex" style="display: flex; align-items: center;">
         <a href="{% url 'recorder:recording_list' %}" class="w3-bar-item w3-button w3-hover-none w3-text-theme" style="display: flex; align-items: center; gap: 8px;">
-            <i class="fa fa-home w3-xlarge"></i>
-            <strong class="w3-large" style="letter-spacing: -0.5px;">ASR Collecting</strong>
+            <img src="{% static 'images/alo.png' %}"  
+                 class="w3-image w3-round" 
+                 style="max-width: 300px; max-height: 80px; object-fit: contain;">
+            <!-- <strong class="w3-large" style="letter-spacing: -0.5px;">ASR Collecting</strong> -->
         </a>
     </div>
 
