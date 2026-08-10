@@ -16,8 +16,6 @@ class User(AbstractUser):
         max_length=8,
         unique=True,
         validators=[phone_regex],
-        null=True,
-        blank=True,
         error_messages={"unique": "A user with that phone number already exists."}
     )
 

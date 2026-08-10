@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block navigation_left %}
+    {% if user.is_authenticated %}
+        {% include 'recorder/components/recorder-sidebar.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block main-content %}
+    <div class="w3-container">
+    <div class="w3-margin-top">
+        {% include 'base_components/base_title.html' %}
+    </div>
+    <div class="w3-margin-top">
+        {% include 'base_components/base_table.html' %}
+    </div>
+</div>
+{% endblock %}

@@ -7,38 +7,39 @@ from smart_selects.db_fields import ChainedForeignKey
 from crum import get_current_user
 
 class ProvinceModel(models.Model):
+    PROVINCE_CHOICE = [
+        ('ຜົ້ງສາລີ - Phongsaly', 'ຜົ້ງສາລີ - Phongsaly'),
+        ('ຫລວງນ້ຳທາ - Luangnamtha', 'ຫລວງນ້ຳທາ - Luangnamtha'),
+        ('ບໍ່ແກ້ວ - Borkeo', 'ບໍ່ແກ້ວ - Borkeo'),
+        ('ອຸດົມໄຊ - Oudomxay', 'ອຸດົມໄຊ - Oudomxay'),
+        ('ໄຊຍະບູລີ - Xayaburi', 'ໄຊຍະບູລີ - Xayaburi'),
+        ('ຫລວງພະບາງ - Luangprabang', 'ຫລວງພະບາງ - Luangprabang'),
+        ('ຫົວພັນ - Houaphan', 'ຫົວພັນ - Houaphan'),
+        ('ຊຽງຂວາງ - Xiangkhouang', 'ຊຽງຂວາງ - Xiangkhouang'),
+        ('ແຂວງວຽງຈັນ - Vientiane Province', 'ແຂວງວຽງຈັນ - Vientiane Province'),
+        ('ນະຄອນຫລວງວຽງຈັນ - Vientiane Capital', 'ນະຄອນຫລວງວຽງຈັນ - Vientiane Capital'),
+        ('ໄຊສົມບູນ - Xaisomboun', 'ໄຊສົມບູນ - Xaisomboun'),
+        ('ບໍລິຄຳໄຊ - Borlikhamxai', 'ບໍລິຄຳໄຊ - Borlikhamxai'),
+        ('ຄຳມ່ວນ - Khammouan', 'ຄຳມ່ວນ - Khammouan'),
+        ('ສະຫວັນນະເຂດ - Salavan', 'ສະຫວັນນະເຂດ - Salavan'),
+        ('ສາລະວັນ - Salavan', 'ສາລະວັນ - Salavan'),
+        ('ເຊກອງ - Attapeu', 'ເຊກອງ - Attapeu'),
+        ('ຈຳປາສັກ - Champasak', 'ຈຳປາສັກ - Champasak'),
+        ('ອັດຕະປື - Attapeu', 'ອັດຕະປື - Attapeu'),
+    ]
     name = models.CharField(
-        max_length = 20,
-        unique = True,
-        verbose_name = "Province"
-    )
+        max_length=50,
+        choices=PROVINCE_CHOICE,
+        verbose_name="Province")
 
     class Meta:
-        verbose_name = "Province"
-        verbose_name_plural = "Provinces"
+        verbose_name = 'Province'
+        verbose_name_plural = 'Provinces'
+        ordering = ['id']
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
-class DistrictModel(models.Model):
-    province = models.ForeignKey(
-        ProvinceModel,
-        on_delete = models.CASCADE,
-        related_name = "districts",
-        verbose_name = "Province"
-    )
-    name = models.CharField(
-        max_length = 30,
-        verbose_name = "District",
-        blank=True, null=True
-    )
-
-    class Meta:
-        verbose_name = "District"
-        verbose_name_plural = "Districts"
-
-    def __str__(self):
-        return self.name
 
 
 class PersonalInfoModel(models.Model):
@@ -57,11 +58,9 @@ class PersonalInfoModel(models.Model):
         blank=True, null=True,
         verbose_name = "Province"
     )
-    district = models.ForeignKey(
-        DistrictModel,
-        on_delete=models.SET_NULL,
-        blank=True, null=True,
-        verbose_name="District"
+    district = models.CharField(
+        max_length=30,
+        verbose_name="District",
     )
     village = models.CharField(
         max_length = 30,

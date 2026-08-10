@@ -35,8 +35,10 @@ urlpatterns = [
     path('api/redocs/', SpectacularRedocView.as_view(url_name='api-schema'), name='api-redocs'),
     path('select2/', include('django_select2.urls')), # DJANGO-SELECT2
     path('chaining/', include('smart_selects.urls')), # SMART_CHAIN
-    path('', include('apps.users.urls', namespace='users')),
+    path('', include('apps.recorder.urls', namespace='recorder')),
+    path('users/', include('apps.users.urls', namespace='users')),
     path('employies/', include('apps.employies.urls', namespace='employies')),
+
 ]
 
 '''

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block navigation_left %}
+    {% if user.is_authenticated %}
+        {% include 'recorder/components/recorder-sidebar.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block main-content %}
+<div class="w3-container w3-padding-32">
+    <div class="w3-card-4 w3-round-large w3-white w3-content" style="max-width: 600px;">
+        
+        <!-- Header -->
+        <div class="w3-container w3-theme w3-padding-16 w3-round-top-large">
+            <h3 class="w3-margin-0"><i class="fa fa-microphone w3-margin-right"></i>Recording your voice</h3>
+        </div>
+
+        <!-- Content Body -->
+        <div class="w3-container w3-padding-24">
+            
+            <!-- Title Input -->
+            <div class="w3-section">
+                <label class="w3-text-grey w3-bold">Voice Title</label>
+                <input class="w3-input w3-border w3-round-large w3-margin-top" type="text" id="titleInput" placeholder="Enter voice title...">
+            </div>
+
+            <!-- Controls (Buttons) -->
+            <div class="w3-section w3-center w3-padding-16">
+                <button id="startBtn" class="w3-button w3-green w3-round-large w3-large w3-margin-right w3-hover-shadow">
+                    🎙️ Start
+                </button>
+                <button id="stopBtn" class="w3-button w3-red w3-round-large w3-large w3-hover-shadow" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+
+            <!-- Status Indicator -->
+            <div class="w3-center w3-margin-bottom">
+                <span id="status" class="w3-tag w3-round w3-light-grey w3-padding">Ready to record</span>
+            </div>
+
+            <!-- Audio Playback -->
+            <div class="w3-section w3-center">
+                <audio id="playback" controls class="w3-full w3-round"></audio>
+            </div>
+
+            <!-- Action Link -->
+            <div class="w3-section w3-center w3-padding-16 w3-border-top">
+                <a href="{% url 'recorder:recording_list' %}" class="w3-button w3-white w3-border w3-border-grey w3-round-large w3-hover-theme">
+                    <i class="fa fa-list w3-margin-right"></i>View your recording
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let mediaRecorder;
+    let audioChunks = [];
+
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const status = document.getElementById('status');
+    const playback = document.getElementById('playback');
+    const titleInput = document.getElementById('titleInput');
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    startBtn.addEventListener('click', async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                playback.src = URL.createObjectURL(audioBlob);
+
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.webm');
+                formData.append('title', titleInput.value);
+
+                status.textContent = "กำลังอัปโหลด...";
+                status.className = "w3-tag w3-round w3-amber w3-padding";
+
+                const res = await fetch("{% url 'recorder:upload_audio' %}", {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (data.status === 'ok') {
+                    status.textContent = "Completed ✅";
+                    status.className = "w3-tag w3-round w3-green w3-padding";
+                } else {
+                    status.textContent = "Errors ❌";
+                    status.className = "w3-tag w3-round w3-red w3-padding";
+                }
+            };
+
+            mediaRecorder.start();
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            status.textContent = "Recording...";
+            status.className = "w3-tag w3-round w3-red w3-animate-fading w3-padding";
+        } catch (err) {
+            status.textContent = "Microphone access denied ❌";
+            status.className = "w3-tag w3-round w3-red w3-padding";
+        }
+    });
+
+    stopBtn.addEventListener('click', () => {
+        mediaRecorder.stop();
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+    });
+</script>
+{% endblock %}

@@ -1,7 +1,7 @@
 {% load custom_tags %}
 <div class="w3-card-4 w3-round-xlarge w3-white">
     <div class="w3-responsive">
-        <table class="w3-table w3-hoverable w3-striped">
+        <table class="w3-table w3-hoverable w3-striped w3-middle">
             <thead class="w3-blue">
                 <tr style="border-bottom: 2px solid #f1f1f1; font-size: 0.85em;">
                     <th class="w3-padding-16" width="60px">#</th>
@@ -14,20 +14,35 @@
             </thead>
             <tbody class="lao-noto w3-text-grey">
                 {% for item in items %}
-                    <tr style="border-bottom: 1px solid #f9f9f9; cursor: pointer;"
-                        class="row-link"
-                        data-url="#">
+                    <tr style="border-bottom: 1px solid #f9f9f9;">
                         <td class="w3-text-grey">{{ forloop.counter }}</td>
 
                         {% for header in headers %}
                             <td>
                                 {% with value=item|get_obj_attr:header.field %}
 
-                                    {% if header.field == 'name' %}
-                                        {{ value }}
+                                    {% if header.field == 'title' %}
+                                        <strong>{{ value }}</strong>
+
+                                    {% elif header.field == "created_at" %}
+                                        {{value | date:"d/m/Y"}}
+
+                                    {% elif header.field == 'audio_file' %}
+                                        {% if value %}
+                                            <audio controls style="height: 36px; max-width: 240px;" class="w3-round">
+                                                <source src="{{ value.url }}" type="audio/webm">
+                                                <source src="{{ value.url }}" type="audio/mpeg">
+                                                <source src="{{ value.url }}" type="audio/wav">
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                        {% else %}
+                                            <span class="w3-text-gray">-</span>
+                                        {% endif %}
+
                                     {% else %}
                                         {{ value|default:"-"}}
                                     {% endif %}
+
                                 {% endwith %}
                             </td>
                         {% endfor %}
@@ -50,6 +65,5 @@
             <i class="fa fa-solid fa-list-ol w3-margin-right"></i>
             Showing <strong>{{ items.count }}</strong> records
         </div>
-
     </div>
 </div>
