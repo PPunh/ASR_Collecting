@@ -1,0 +1,85 @@
+    <!-- Main Content Card -->
+    <div class="w3-card-4 w3-white w3-round-xlarge">
+        
+        <!-- Header Section -->
+        <div class="w3-container w3-padding-16 w3-light-grey w3-border-bottom">
+            <h3 class="w3-margin-none w3-bold w3-text-dark-grey">{{ object.title }}</h3>
+            <span class="w3-tiny w3-text-grey">Recording ID: #{{ object.id }}</span>
+        </div>
+
+        <div class="w3-container w3-padding-24">
+            
+            <!-- Audio Player Section -->
+            <div class="audio-player-box w3-padding-16 w3-margin-bottom">
+                <label class="w3-tiny w3-text-light-grey w3-bold w3-block w3-margin-bottom" style="letter-spacing: 1px;">AUDIO PREVIEW</label>
+                {% if object.audio_file %}
+                    <audio controls controlsList="nodownload">
+                        <source src="{{ object.audio_file.url }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                {% else %}
+                    <p class="w3-text-red w3-small w3-margin-none"><i class="fa-solid fa-triangle-exclamation"></i> No audio file attached.</p>
+                {% endif %}
+            </div>
+
+            <!-- Audit & Metadata Info -->
+            <div class="w3-row-padding w3-margin-top" style="margin-left: -16px; margin-right: -16px;">
+                <div class="w3-col m6 w3-margin-bottom">
+                    <div class="meta-label">Created At</div>
+                    <div class="meta-value">{{ object.created_at|date:"d M Y, H:i"|default:"-" }}</div>
+                </div>
+                <div class="w3-col m6 w3-margin-bottom">
+                    <div class="meta-label">Updated At</div>
+                    <div class="meta-value">{{ object.updated_at|date:"d M Y, H:i"|default:"-" }}</div>
+                </div>
+                <div class="w3-col m6 w3-margin-bottom">
+                    <div class="meta-label">Reviewed By</div>
+                    <div class="meta-value">
+                        {% if object.reviewed_by %}
+                            <i class="fa-solid fa-user-check w3-text-blue w3-margin-right"></i>{{ object.reviewed_by.get_full_name|default:object.reviewed_by.username }}
+                        {% else %}
+                            <span class="w3-text-grey">-</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="w3-col m6 w3-margin-bottom">
+                    <div class="meta-label">Reviewed At</div>
+                    <div class="meta-value">
+                        {% if object.reviewed_at %}
+                            <i class="fa-solid fa-calendar-check w3-text-green w3-margin-right"></i>{{ object.reviewed_at|date:"d M Y, H:i" }}
+                        {% else %}
+                            <span class="w3-text-grey">-</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments / Notes Display -->
+            <div class="w3-margin-top w3-padding-16 w3-light-grey w3-round-medium w3-border">
+                <span class="meta-label w3-block w3-margin-bottom"><i class="fa-solid fa-comment-dots w3-margin-right"></i>Note / Comments</span>
+                <p class="w3-margin-none w3-text-dark-grey" style="white-space: pre-line;">{{ object.comment|default:"No comments or notes provided." }}</p>
+            </div>
+
+            <hr class="w3-margin-top-24">
+            
+            <form method="post" class="w3-container w3-padding-none">
+                {% csrf_token %}
+                <h5 class="w3-bold w3-text-dark-grey"><i class="fa-solid fa-pen-to-square w3-margin-right"></i>Review & Take Action</h5>
+                
+                <div class="w3-margin-bottom">
+                    <label class="w3-small w3-bold w3-text-grey">Update Comment / Reason</label>
+                    <textarea name="comment" rows="3" class="w3-input w3-border w3-round-medium w3-light-grey" placeholder="Add reason for approval or rejection...">{{ object.comment|default:'' }}</textarea>
+                </div>
+
+                <div class="w3-flex" style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="submit" name="action" value="rejected" class="w3-button w3-red w3-round-medium w3-small w3-bold">
+                        <i class="fa-solid fa-xmark w3-margin-right"></i>Reject
+                    </button>
+                    <button type="submit" name="action" value="approved" class="w3-button w3-green w3-round-medium w3-small w3-bold">
+                        <i class="fa-solid fa-check w3-margin-right"></i>Approve
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>

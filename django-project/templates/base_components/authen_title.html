@@ -1,0 +1,27 @@
+<div class="w3-card-4 w3-white w3-round-large w3-margin-bottom w3-animate-opacity">
+        <div class="w3-container w3-padding-16 w3-display-container">
+            <div class="w3-row w3-flex-center">
+                <div class="w3-col m6 s12">
+                    <h3 class="w3-text-theme" style="margin: 0; font-weight: bold;">
+                        <i class="fa fa-globe w3-margin-right w3-text-blue"></i>
+                        {{ object.title }}
+                    </h3>
+                    <p class="w3-text-gray" style="margin: 4px 0 0 0;">
+                        <i class="fa fa-id-badge w3-margin-right"></i>Status:
+                        <strong class="w3-padding-small">
+                            {% if object.status == 'approved' %}
+                                <span class="w3-tag w3-green w3-round-medium w3-padding-small"><i class="fa-solid fa-circle-check w3-margin-right"></i>Approved</span>
+                            {% elif object.status == 'rejected' %}
+                                <span class="w3-tag w3-red w3-round-medium w3-padding-small"><i class="fa-solid fa-circle-xmark w3-margin-right"></i>Rejected</span>
+                            {% else %}
+                                <span class="w3-tag w3-amber w3-text-white w3-round-medium w3-padding-small"><i class="fa-solid fa-clock w3-margin-right"></i>Pending</span>
+                            {% endif %}
+                        </strong>
+                    </p>
+                </div>
+                <div class="w3-col m6 s12">
+                    
+                </div>
+            </div>
+        </div>
+    </div>

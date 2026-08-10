@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block navigation_left %}
+    {% if user.is_authenticated %}
+        {% include 'recorder/components/recorder-sidebar.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block main-content %}
+<div class="w3-container w3-margin-bottom">
+    <div class="w3-margin-top">
+        {% include 'base_components/authen_title.html' %}
+    </div>
+
+    <div class="w3-margin-top">
+        <!-- Main Content Card -->
+        <div class="w3-card-4 w3-white w3-round-xlarge">
+            <div class="w3-container w3-padding-24">
+                
+                <!-- Audio Player Section -->
+                <div class="w3-dark-grey w3-padding-16 w3-round-large w3-margin-bottom">
+                    <label class="w3-tiny w3-text-light-grey w3-bold w3-block w3-margin-bottom" style="letter-spacing: 1px;">
+                        <i class="fa-solid fa-headphones w3-margin-right"></i>AUDIO PREVIEW
+                    </label>
+                    {% if object.audio_file %}
+                        <audio controls controlsList="nodownload" style="width: 100%;">
+                            <source src="{{ object.audio_file.url }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    {% else %}
+                        <div class="w3-panel w3-pale-red w3-border w3-border-red w3-round w3-padding-small">
+                            <p class="w3-text-red w3-small w3-margin-none"><i class="fa-solid fa-triangle-exclamation w3-margin-right"></i> No audio file attached.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Audit & Metadata Info -->
+                <div class="w3-row-padding w3-margin-top" style="margin-left: -16px; margin-right: -16px;">
+                    <div class="w3-col m6 l3 w3-margin-bottom">
+                        <div class="w3-card w3-light-grey w3-padding w3-round-medium">
+                            <div class="w3-tiny w3-bold w3-text-grey w3-margin-bottom"><i class="fa-regular fa-calendar-plus w3-margin-right"></i><strong>CREATED AT</strong></div>
+                            <div class="w3-medium w3-bold w3-text-theme">{{ object.created_at|date:"d/m/Y, H:i"|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="w3-col m6 l3 w3-margin-bottom">
+                        <div class="w3-card w3-light-grey w3-padding w3-round-medium">
+                            <div class="w3-tiny w3-bold w3-text-grey w3-margin-bottom"><i class="fa-regular fa-user w3-margin-right"></i><strong>CREATED BY</strong></div>
+                            <div class="w3-medium w3-bold">
+                                {% if object.created_by %}
+                                    <span class="w3-text-theme"><i class="fa-solid fa-user-check w3-margin-right"></i>{{ object.created_by.username }}</span>
+                                {% else %}
+                                    <span class="w3-text-grey">-</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w3-col m6 l3 w3-margin-bottom">
+                        <div class="w3-card w3-light-grey w3-padding w3-round-medium">
+                            <div class="w3-tiny w3-bold w3-text-grey w3-margin-bottom"><i class="fa-regular fa-user w3-margin-right"></i><strong>REVIEWED BY</strong></div>
+                            <div class="w3-medium w3-bold">
+                                {% if object.reviewed_by %}
+                                    <span class="w3-text-theme"><i class="fa-solid fa-user-check w3-margin-right"></i>{{ object.reviewed_by.get_full_name|default:object.reviewed_by.username }}</span>
+                                {% else %}
+                                    <span class="w3-text-grey">-</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w3-col m6 l3 w3-margin-bottom">
+                        <div class="w3-card w3-light-grey w3-padding w3-round-medium">
+                            <div class="w3-tiny w3-bold w3-text-grey w3-margin-bottom"><i class="fa-regular fa-calendar-check w3-margin-right"></i><strong>REVIEWED AT</strong></div>
+                            <div class="w3-medium w3-bold">
+                                {% if object.reviewed_at %}
+                                    <span class="w3-text-theme">{{ object.reviewed_at|date:"d/m/Y, H:i" }}</span>
+                                {% else %}
+                                    <span class="w3-text-grey">-</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments / Notes Display -->
+                <div class="w3-margin-top w3-padding-16 w3-margin-bottom w3-light-grey w3-round-medium w3-border">
+                    <span class="w3-tiny w3-bold w3-text-grey w3-block w3-margin-bottom"><i class="fa-solid fa-comment-dots w3-margin-right"></i><strong>CURRENT NOTE / COMMENTS</strong></span>
+                    <p class="w3-text-dark-grey w3-padding">
+                        {{ object.comment|default:"No comments or notes provided." }}
+                    </p>
+                </div>
+
+                <!-- Action Form Section -->
+                <div class="w3-margin-top-24 w3-padding-16 w3-light-grey w3-round-large w3-border">
+                    <form method="post" class="w3-container w3-padding-none">
+                        {% csrf_token %}
+                        <h5 class="w3-bold w3-text-dark-grey w3-margin-none w3-margin-bottom"><i class="fa-solid fa-pen-to-square w3-margin-right w3-text-blue"></i>Review & Take Action</h5>
+                        
+                        <div class="w3-margin-bottom">
+                            <label class="w3-small w3-bold w3-text-grey">Update Comment / Reason</label>
+                            <textarea name="comment" rows="3" class="w3-input w3-border w3-round-medium w3-white w3-margin-top-4" placeholder="Add reason for approval or rejection...">{{ object.comment|default:'' }}</textarea>
+                        </div>
+
+                        <div class="w3-flex" style="display: flex; gap: 10px; justify-content: flex-end; align-items: center;">
+                            <button type="submit" name="action" value="rejected" class="w3-button w3-red w3-round-medium w3-small w3-bold">
+                                <i class="fa fa-solid fa-ban w3-margin-right"></i>Reject
+                            </button>
+                            <button type="submit" name="action" value="approved" class="w3-button w3-green w3-round-medium w3-small w3-bold">
+                                <i class="fa fa-solid fa-check w3-margin-right"></i>Approve
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

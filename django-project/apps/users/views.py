@@ -45,7 +45,7 @@ class Login(LoginView):
 
     def get_success_url(self):
         return reverse_lazy(
-            'users:home',
+            'recorder:recording_list',
         )
         
     def get_context_data(self, **kwargs):

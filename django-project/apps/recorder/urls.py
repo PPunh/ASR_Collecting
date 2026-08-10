@@ -18,6 +18,7 @@ urlpatterns = [
     path('', views.RecordingListView.as_view(), name='recording_list'),
     path('record/', views.RecordPageView.as_view(), name='record_page'),
     path('upload-audio/', views.UploadAuditoView.as_view(), name='upload_audio'),
+    path('details/<int:pk>/', views.ReviewVoiceDetailView.as_view(), name="details"),
 ]
 
 # when user go to path /app_name/ it will show api root page (endpoints list)

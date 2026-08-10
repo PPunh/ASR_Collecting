@@ -14,7 +14,9 @@
             </thead>
             <tbody class="lao-noto w3-text-grey">
                 {% for item in items %}
-                    <tr style="border-bottom: 1px solid #f9f9f9;">
+                    <tr style="border-bottom: 1px solid #f9f9f9; cursor: pointer;"
+                        class="row-link"
+                        data-url="{% url details_url_name pk=item.pk %}">
                         <td class="w3-text-grey">{{ forloop.counter }}</td>
 
                         {% for header in headers %}

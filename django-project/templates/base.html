@@ -26,14 +26,14 @@
 <body class="lao-noto">
 
     {# Top Navigation #}
-    <nav class="w3-animate-top w3-top">
+    <nav class="w3-animate-top">
         {% block main-navigation %}
             {% if user.is_authenticated %}
                 {% include 'main-navigation.html' %}
             {% endif %}
         {% endblock %}
     </nav>
-    <div class="w3-row w3-animate-left">
+    <div class="w3-row w3-animate-left" style="margin-top:65px;">
         <nav>
             {% block navigation_left %}{% endblock %}
         </nav>
@@ -49,6 +49,7 @@
 
     <!-- JavaScript -->
     <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
     {% block js %}
         <script>
             function myFunction() {

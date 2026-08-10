@@ -41,7 +41,7 @@ class User(AbstractUser):
         verbose_name_plural = "Users"
 
     def __str__(self):
-        return f"{self.username} ({self.phone_number or 'N/A'})"
+        return f"{self.username}"
 
     def save(self, *args, **kwargs):
         self.is_staff = self.is_superuser
