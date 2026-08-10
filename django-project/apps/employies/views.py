@@ -1,6 +1,6 @@
 # coding=utf-8
 from django.shortcuts import render
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, DetailView
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from apps.common.mixins import SearchFilterMixin, MultipleInlineFormsetMixin
@@ -21,6 +21,7 @@ class EmployiesListView(SearchFilterMixin, ListView):
 		context = super().get_context_data(*args, **kwargs)
 		context['title'] = "Employies"
 		context['topic'] = "All Employies"
+		context["details_url_name"] = "employies:details"
 		return context
 
 class EmployiesCreateView(MultipleInlineFormsetMixin, CreateView):
@@ -49,4 +50,16 @@ class EmployiesCreateView(MultipleInlineFormsetMixin, CreateView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context["title"] = "Add new user"
+		return context
+
+
+class EmpployiesDetailView(DetailView):
+	model = EmployiesModel
+	template_name = "employies/details.html"
+	context_object_name = "items"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = "Employee Details"
+		context['topic'] = "Employies Details"
 		return context

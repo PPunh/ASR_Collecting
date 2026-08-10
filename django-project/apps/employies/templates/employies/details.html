@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block navigation_left %}
+    {% if user.is_authenticated %}
+        {% include 'employies/components/employies-sidebar.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block main-content %}
+<div class="w3-container w3-margin-bottom w3-margin-top">
+
+    <!-- Main Content Card -->
+    <div class="w3-card-4 w3-white w3-round-xlarge" style="overflow: hidden;">
+        
+        <!-- Profile Header Section -->
+        <div class="w3-container w3-padding-24 w3-theme w3-flex-between" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <!-- Avatar Icon / Initial -->
+                <div class="w3-circle w3-white w3-text-theme" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold;">
+                    {{ object.name|slice:":1"|upper }}
+                </div>
+                <div>
+                    <h2 class="w3-margin-none w3-bold w3-text-white"><strong>{{ object.name }} {{ object.sur_name|default:"" }}</strong></h2>
+                    <span class="w3-tag w3-white1 w3-card w3-round-medium w3-small w3-margin-top-4">
+                        <i class="fa fa-solid fa-id-card w3-margin-right"></i>Code: {{ object.code|default:"-" }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Linked Account Badge -->
+            <div>
+                {% if object.user %}
+                    <span class="w3-tag w3-green w3-round-medium w3-padding-small">
+                        <i class="fa-solid fa-user-check w3-margin-right"></i>Account Linked: {{ object.user.username }}
+                    </span>
+                {% else %}
+                    <span class="w3-tag w3-grey w3-round-medium w3-padding-small">
+                        <i class="fa-solid fa-user-slash w3-margin-right"></i>No User Account
+                    </span>
+                {% endif %}
+            </div>
+
+            <div class="w3-container">
+                <a href="#" class="w3-button w3-white w3-hover-black w3-round w3-padding">
+                    <i class="fa fa-solid fa-pencil"></i>
+                    Modify Employee info
+                </a>
+                <a href="#" class="w3-button w3-white w3-hover-black w3-round w3-padding">
+                    <i class="fa fa-solid fa-pencil"></i>
+                    Modify User info
+                </a>
+            </div>
+        </div>
+
+        <div class="w3-container w3-padding-24">
+            
+            <!-- Section 1: Personal Information -->
+            <div class="w3-margin-bottom">
+                <h5 class="w3-bold w3-text-dark-grey w3-padding-bottom-8">
+                    <i class="fa-solid fa-user w3-margin-right w3-text-theme"></i>Personal Details
+                </h5>
+                <div class="w3-row-padding w3-margin-top" style="margin-left: -16px; margin-right: -16px;">
+                    <div class="w3-col m6 w3-margin-bottom">
+                        <div class="w3-light-grey w3-padding w3-round-medium w3-border">
+                            <span class="w3-tiny w3-bold w3-text-grey w3-block">FIRST NAME</span>
+                            <span class="w3-large w3-bold w3-text-dark-grey">{{ object.name }}</span>
+                        </div>
+                    </div>
+                    <div class="w3-col m6 w3-margin-bottom">
+                        <div class="w3-light-grey w3-padding w3-round-medium w3-border">
+                            <span class="w3-tiny w3-bold w3-text-grey w3-block">SURNAME</span>
+                            <span class="w3-large w3-bold w3-text-dark-grey">{{ object.sur_name|default:"-" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Address Information -->
+            <div class="w3-margin-bottom w3-margin-top-24">
+                <h5 class="w3-bold w3-text-dark-grey w3-padding-bottom-8">
+                    <i class="fa-solid fa-location-dot w3-margin-right w3-text-theme"></i>Address Information
+                </h5>
+                <div class="w3-row-padding w3-margin-top" style="margin-left: -16px; margin-right: -16px;">
+                    <div class="w3-col m4 w3-margin-bottom">
+                        <div class="w3-light-grey w3-padding w3-round-medium w3-border">
+                            <span class="w3-tiny w3-bold w3-text-grey w3-block">VILLAGE</span>
+                            <span class="w3-medium w3-bold w3-text-dark-grey">{{ object.village|default:"-" }}</span>
+                        </div>
+                    </div>
+                    <div class="w3-col m4 w3-margin-bottom">
+                        <div class="w3-light-grey w3-padding w3-round-medium w3-border">
+                            <span class="w3-tiny w3-bold w3-text-grey w3-block">DISTRICT</span>
+                            <span class="w3-medium w3-bold w3-text-dark-grey">{{ object.district|default:"-" }}</span>
+                        </div>
+                    </div>
+                    <div class="w3-col m4 w3-margin-bottom">
+                        <div class="w3-light-grey w3-padding w3-round-medium w3-border">
+                            <span class="w3-tiny w3-bold w3-text-grey w3-block">PROVINCE</span>
+                            <span class="w3-medium w3-bold w3-text-dark-grey">{{ object.province|default:"-" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: System & Audit Metadata (AuditModel) -->
+            <div class="w3-margin-top-24">
+                <h5 class="w3-bold w3-text-dark-grey w3-padding-bottom-8">
+                    <i class="fa-solid fa-clock-rotate-left w3-margin-right w3-text-theme"></i>Audit Information
+                </h5>
+                <div class="w3-row-padding w3-margin-top" style="margin-left: -16px; margin-right: -16px;">
+                    <div class="w3-col m6 l3 w3-margin-bottom">
+                        <div class="w3-card w3-light-grey w3-padding w3-round-medium w3-border">
+                            <div class="w3-tiny w3-bold w3-text-grey w3-margin-bottom"><i class="fa-regular fa-calendar-plus w3-margin-right"></i>CREATED AT</div>
+                            <div class="w3-small w3-bold w3-text-dark-grey">{{ object.created_at|date:"d M Y, H:i"|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="w3-col m6 l3 w3-margin-bottom">
+                        <div class="w3-card w3-light-grey w3-padding w3-round-medium w3-border">
+                            <div class="w3-tiny w3-bold w3-text-grey w3-margin-bottom"><i class="fa-regular fa-user w3-margin-right"></i>CREATED BY</div>
+                            <div class="w3-small w3-bold w3-text-dark-grey">{{ object.created_by|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="w3-col m6 l3 w3-margin-bottom">
+                        <div class="w3-card w3-light-grey w3-padding w3-round-medium w3-border">
+                            <div class="w3-tiny w3-bold w3-text-grey w3-margin-bottom"><i class="fa-regular fa-clock w3-margin-right"></i>UPDATED AT</div>
+                            <div class="w3-small w3-bold w3-text-dark-grey">{{ object.updated_at|date:"d M Y, H:i"|default:"-" }}</div>
+                        </div>
+                    </div>
+                    <div class="w3-col m6 l3 w3-margin-bottom">
+                        <div class="w3-card w3-light-grey w3-padding w3-round-medium w3-border">
+                            <div class="w3-tiny w3-bold w3-text-grey w3-margin-bottom"><i class="fa-regular fa-pen-to-square w3-margin-right"></i>UPDATED BY</div>
+                            <div class="w3-small w3-bold w3-text-dark-grey">{{ object.updated_by|default:"-" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

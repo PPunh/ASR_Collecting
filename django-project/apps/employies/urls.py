@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('', views.EmployiesListView.as_view(), name="list"),
     path('add/', views.EmployiesCreateView.as_view(), name="add"),
+    path('details/<int:pk>/', views.EmpployiesDetailView.as_view(), name="details"),
 ]
 
 # when user go to path /app_name/ it will show api root page (endpoints list)

@@ -38,8 +38,8 @@ class RecordingListView(SearchFilterMixin, ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context["title"] = "Sound List"
-		context["topic"] = "Voice Recorded List"
+		context["title"] = "Voices List"
+		context["topic"] = "Voices Recorded List"
 		context["details_url_name"] = "recorder:details"
 		return context
 
