@@ -9,8 +9,8 @@
 {% endblock %}
 
 {% block main-content %}
-<div class="w3-container w3-padding-32">
-    <div class="w3-card-4 w3-round-large w3-white w3-content" style="max-width: 600px;">
+<div class="w3-container">
+    <div class="w3-card-4 w3-round-large w3-white w3-content">
         
         <!-- Header -->
         <div class="w3-container w3-theme w3-padding-16 w3-round-top-large">
@@ -29,10 +29,10 @@
             <!-- Controls (Buttons) -->
             <div class="w3-section w3-center w3-padding-16">
                 <button id="startBtn" class="w3-button w3-green w3-round-large w3-large w3-margin-right w3-hover-shadow">
-                    🎙️ Start
+                    🎙 Start
                 </button>
                 <button id="stopBtn" class="w3-button w3-red w3-round-large w3-large w3-hover-shadow" disabled>
-                    ⏹️ Stop
+                    ⏹ Stop
                 </button>
             </div>
 
@@ -89,7 +89,7 @@
                 formData.append('audio', audioBlob, 'recording.webm');
                 formData.append('title', titleInput.value);
 
-                status.textContent = "กำลังอัปโหลด...";
+                status.textContent = "Uploading...";
                 status.className = "w3-tag w3-round w3-amber w3-padding";
 
                 const res = await fetch("{% url 'recorder:upload_audio' %}", {
@@ -100,10 +100,10 @@
                 const data = await res.json();
                 
                 if (data.status === 'ok') {
-                    status.textContent = "Completed ✅";
+                    status.textContent = "Completed";
                     status.className = "w3-tag w3-round w3-green w3-padding";
                 } else {
-                    status.textContent = "Errors ❌";
+                    status.textContent = "Errors";
                     status.className = "w3-tag w3-round w3-red w3-padding";
                 }
             };
@@ -114,7 +114,7 @@
             status.textContent = "Recording...";
             status.className = "w3-tag w3-round w3-red w3-animate-fading w3-padding";
         } catch (err) {
-            status.textContent = "Microphone access denied ❌";
+            status.textContent = "Microphone access denied";
             status.className = "w3-tag w3-round w3-red w3-padding";
         }
     });
