@@ -90,29 +90,29 @@
                     </p>
                 </div>
                 {% if pending_status %}
-                    <!-- Action Form Section -->
-                    <div class="w3-margin-top-24 w3-padding-16 w3-light-grey w3-round-large w3-border">
-                        <form method="post" class="w3-container w3-padding-none">
-                            {% csrf_token %}
-                            <h5 class="w3-bold w3-text-dark-grey w3-margin-none w3-margin-bottom"><i class="fa-solid fa-pen-to-square w3-margin-right w3-text-blue"></i>Review & Take Action</h5>
+                        <!-- Action Form Section -->
+                        <div class="w3-margin-top-24 w3-padding-16 w3-light-grey w3-round-large w3-border">
+                            <form method="post" class="w3-container w3-padding-none">
+                                {% csrf_token %}
+                                <h5 class="w3-bold w3-text-dark-grey w3-margin-none w3-margin-bottom"><i class="fa-solid fa-pen-to-square w3-margin-right w3-text-blue"></i>Review & Take Action</h5>
 
-                            <div class="w3-margin-bottom">
-                                <label class="w3-small w3-bold w3-text-grey">Update Comment / Reason</label>
-                                <textarea name="comment" rows="3" class="w3-input w3-border w3-round-medium w3-white w3-margin-top-4" placeholder="Add reason for approval or rejection...">{{ object.comment|default:'' }}</textarea>
-                            </div>
+                                <div class="w3-margin-bottom">
+                                    <label class="w3-small w3-bold w3-text-grey">Update Comment / Reason</label>
+                                    <textarea name="comment" rows="3" class="w3-input w3-border w3-round-medium w3-white w3-margin-top-4" placeholder="Add reason for approval or rejection...">{{ object.comment|default:'' }}</textarea>
+                                </div>
 
-                            <div class="w3-flex" style="display: flex; gap: 10px; justify-content: flex-end; align-items: center;">
-                                <button type="submit" name="action" value="rejected" class="w3-button w3-red w3-round-medium w3-small w3-bold">
-                                    <i class="fa fa-solid fa-ban w3-margin-right"></i>Reject
-                                </button>
-                                <button type="submit" name="action" value="approved" class="w3-button w3-green w3-round-medium w3-small w3-bold">
-                                    <i class="fa fa-solid fa-check w3-margin-right"></i>Approve
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                                <div class="w3-flex" style="display: flex; gap: 10px; justify-content: flex-end; align-items: center;">
+                                    <button type="submit" name="action" value="rejected" class="w3-button w3-red w3-round-medium w3-small w3-bold">
+                                        <i class="fa fa-solid fa-ban w3-margin-right"></i>Reject
+                                    </button>
+                                    <button type="submit" name="action" value="approved" class="w3-button w3-green w3-round-medium w3-small w3-bold">
+                                        <i class="fa fa-solid fa-check w3-margin-right"></i>Approve
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                 {% else %}
-                    
+
                 {% endif %}
 
             </div>

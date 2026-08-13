@@ -132,27 +132,37 @@ class CodeGenerationModel(models.Model):
     class Meta:
         abstract = True
 
-    def generate_code(self, prefix=None, start_code = 1):
+    def generate_code(self, prefix=None, start_code=100001):
         if not self.code:
             if not prefix:
                 # Default prefix from class name if not provided
                 prefix = self.__class__.__name__.upper()[:3]
 
             with transaction.atomic():
-                # Lock the table to prevent race conditions
-                last_obj = self.__class__.objects.select_for_update().order_by('code').first()
+                # 1. Get last data from ID
+                last_obj = (
+                    self.__class__.objects.select_for_update()
+                    .filter(code__isnull=False)
+                    .order_by('-id')
+                    .first()
+                )
+
                 if last_obj and last_obj.code:
                     try:
-                        # Assumes code format is PRE-NUMBER
-                        content = last_obj.code.split("-")[-1]
-                        last_code = int(content)
-                        new_code = last_code + 1
+                        # Assumes code format is "PRE - NUMBER"
+                        content = last_obj.code.split("-")[-1].strip()
+                        new_code_num = int(content) + 1
                     except (ValueError, IndexError):
-                        new_code = start_code
-
+                        new_code_num = start_code
                 else:
-                    new_code = start_code
-                self.code = f"{prefix} - {new_code}"
+                    new_code_num = start_code
+
+                generated_code = f"{prefix} - {new_code_num}"
+                while self.__class__.objects.filter(code=generated_code).exists():
+                    new_code_num += 1
+                    generated_code = f"{prefix} - {new_code_num}"
+
+                self.code = generated_code
 
     def save(self, *args, **kwargs):
         if not self.code:

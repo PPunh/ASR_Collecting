@@ -13,7 +13,7 @@
 
     <!-- Main Content Card -->
     <div class="w3-card-4 w3-white w3-round-xlarge" style="overflow: hidden;">
-        
+
         <!-- Profile Header Section -->
         <div class="w3-container w3-padding-24 w3-theme w3-flex-between" style="display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; align-items: center; gap: 16px;">
@@ -42,20 +42,22 @@
                 {% endif %}
             </div>
 
-            <div class="w3-container">
-                <a href="#" class="w3-button w3-white w3-hover-black w3-round w3-padding">
-                    <i class="fa fa-solid fa-pencil"></i>
-                    Modify Employee info
-                </a>
-                <a href="#" class="w3-button w3-white w3-hover-black w3-round w3-padding">
-                    <i class="fa fa-solid fa-pencil"></i>
-                    Modify User info
-                </a>
-            </div>
+            {% if perms.employies.change_employiesmodel %}
+                <div class="w3-container">
+                    <a href="#" class="w3-button w3-white w3-hover-black w3-round w3-padding">
+                        <i class="fa fa-solid fa-pencil"></i>
+                        Modify Employee info
+                    </a>
+                    <a href="#" class="w3-button w3-white w3-hover-black w3-round w3-padding">
+                        <i class="fa fa-solid fa-pencil"></i>
+                        Modify User info
+                    </a>
+                </div>
+            {% endif %}
         </div>
 
         <div class="w3-container w3-padding-24">
-            
+
             <!-- Section 1: Personal Information -->
             <div class="w3-margin-bottom">
                 <h5 class="w3-bold w3-text-dark-grey w3-padding-bottom-8">
