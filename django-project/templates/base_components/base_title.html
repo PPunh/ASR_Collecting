@@ -1,17 +1,23 @@
 <div class="w3-card-4 w3-white w3-round-large w3-margin-bottom w3-animate-opacity">
         <div class="w3-container w3-padding-16 w3-display-container">
             <div class="w3-row w3-flex-center">
-                <div class="w3-col m4 s12">
-                    <h3 class="w3-text-theme" style="margin: 0; font-weight: bold;">
-                        <i class="fa fa-globe w3-margin-right w3-text-blue"></i>
+                <div class="w3-col m6 s12">
+                    <h3 class="w3-text-theme lao-noto" style="margin: 0; font-weight: bold;">
+                        <button onclick="window.history.back();"
+                                class="w3-button w3-white w3-border w3-border-grey w3-round-large w3-hover-theme w3-margin-right"
+                                title="Go Back">
+                            <i class="fa fa-solid fa-arrow-left"></i>
+                        </button>
+                        <i class="fa fa-globe w3-margin-right w3-text-blue w3-spin"></i>
                         {{ topic |upper }}
                     </h3>
-                    <p class="w3-text-gray" style="margin: 4px 0 0 0;">
-                        <i class="fa fa-id-badge w3-margin-right"></i>All Employies:
+                    <p class="w3-text-gray" style="margin-left:65px;">
+                        <i class="fa fa-id-badge w3-margin-right"></i>
                         <strong class="w3-tag w3-green w3-padding-small">{{items.count}}</strong>
+                        Records
                     </p>
                 </div>
-                <div class="w3-col m8 s12">
+                <div class="w3-col m6 s12">
                     {% include "base_components/base_action.html" %}
                 </div>
             </div>

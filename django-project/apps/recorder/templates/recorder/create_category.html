@@ -4,7 +4,7 @@
 
 {% block navigation_left %}
     {% if user.is_authenticated %}
-        {% include 'employies/components/employies-sidebar.html' %}
+        {% include 'recorder/components/recorder-sidebar.html' %}
     {% endif %}
 {% endblock %}
 
@@ -18,11 +18,6 @@
                 {% include "snippets/form_generic.html" with form=form %}
             </div>
 
-            <div class="w3-card w3-round-large w3-padding w3-margin-top">
-                <h3 class="w3-panel w3-theme w3-padding w3-round-large">Employies information</h3>
-                {% include "snippets/formset_generic.html" with formset=employee_formset %}
-            </div>
-
             <div class="w3-container w3-padding-16 w3-right-align">
                 <a href="javascript:history.back()" class="w3-button w3-white w3-border w3-border-grey w3-round-large w3-margin-right">Cancel</a>
                 <button type="submit" class="w3-button w3-theme-dark w3-round-large w3-hover-shadow" style="padding:10px 32px">
@@ -32,20 +27,4 @@
         </form>
     </div>
 </div>
-{% endblock %}
-{% block extra_js %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {{ form.media }}
-    {{ employee_formset.media }}
-
-    <script>
-    $(document).ready(function() {
-        $(document).on('change', "select[id$='-province']", function() {
-            var provinceSelect = $(this);
-            var districtSelect = provinceSelect.closest('.formset-row').find("select[id$='-district']");
-
-            districtSelect.trigger('change');
-        });
-    });
-    </script>
 {% endblock %}

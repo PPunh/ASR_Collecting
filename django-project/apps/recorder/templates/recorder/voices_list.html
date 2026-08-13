@@ -12,6 +12,11 @@
     <div class="w3-container">
     <div class="w3-margin-top">
         {% include 'base_components/base_title.html' %}
+        <a href="{% url 'recorder:record_voice' pk=category.pk %}"
+            class="w3-bar-item w3-button w3-round-large w3-theme w3-margin-top">
+            <i class="fa fa-plus w3-margin-right"></i>
+            Add new record
+        </a>
     </div>
     <div class="w3-margin-top">
         {% include 'base_components/base_table.html' %}

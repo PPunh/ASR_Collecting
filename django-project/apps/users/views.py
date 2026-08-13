@@ -20,7 +20,6 @@ from django.forms import inlineformset_factory
 from . import forms
 from . import models
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -45,9 +44,9 @@ class Login(LoginView):
 
     def get_success_url(self):
         return reverse_lazy(
-            'recorder:recording_list',
+            'recorder:category',
         )
-        
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "Login"

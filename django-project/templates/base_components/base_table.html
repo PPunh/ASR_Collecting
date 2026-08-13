@@ -40,6 +40,23 @@
                                         {% else %}
                                             <span class="w3-text-gray">-</span>
                                         {% endif %}
+                                    {% elif header.field == "status" %}
+                                        {% if value == "rejected" %}
+                                            <span class="w3-tag w3-red w3-small w3-padding-small">
+                                                <i class="fa fa-solid fa-ban w3-margin-right"></i>
+                                                {{value|upper}}
+                                            </span>
+                                        {% elif value == "approved" %}
+                                            <span class="w3-tag w3-green w3-small w3-padding-small">
+                                                <i class="fa fa-solid fa-check w3-margin-right"></i>
+                                                {{value|upper}}
+                                            </span>
+                                        {% else %}
+                                            <span class="w3-tag w3-small w3-padding-small">
+                                                <i class="fa fa-solid fa-refresh w3-spin w3-margin-right"></i>
+                                                {{value|upper}}
+                                            </span>
+                                        {% endif %}
 
                                     {% else %}
                                         {{ value|default:"-"}}

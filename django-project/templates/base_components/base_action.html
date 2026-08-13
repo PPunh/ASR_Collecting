@@ -6,12 +6,12 @@
             {% if status_choices %}
             <div class="search-item-status">
                 <div class="w3-display-container">
-                    <i class="fa-solid fa-filter w3-display-left w3-margin-left w3-text-grey" style="font-size: 0.8rem;"></i>
-                    <select name="status" 
-                            class="w3-select w3-border w3-round-medium w3-light-grey lao-noto" 
+                    <i class="fa fa-solid fa-filter w3-display-left w3-margin-left w3-text-grey" style="font-size: 0.8rem;"></i>
+                    <select name="status"
+                            class="w3-select w3-border w3-round-medium w3-light-grey lao-noto"
                             style="height: 36px; padding: 0 8px 0 30px !important; font-size: 0.85rem; border: 1px solid #ddd !important;"
                             onchange="this.form.submit()">
-                        <option value="" disabled selected>Status</option>
+                        <!-- <option value="" disabled selected>Status</option> -->
                         <option value="">All</option>
                         {% for value, label in status_choices %}
                         <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ label }}</option>
@@ -24,16 +24,16 @@
             <div class="search-item-input w3-padding-small">
                 <div class="w3-display-container">
                     <i class="fa-solid fa-magnifying-glass w3-display-left w3-margin-left w3-text-grey" style="font-size: 0.8rem;"></i>
-                    
+
                     <input type="text" name="{{ search_param }}" id="search-input"
-                           class="w3-input w3-border w3-round-medium w3-light-grey lao-noto" 
+                           class="w3-input w3-border w3-round-medium w3-light-grey lao-noto"
                            style="height: 36px; padding: 0 35px 0 30px !important; font-size: 0.85rem; border: 1px solid #ddd !important;"
                            placeholder= 'Search...'
                            value="{{ search_query }}">
 
                     {% if search_query %}
-                    <span class="w3-display-right w3-margin-right w3-text-grey clear-btn" 
-                          onclick="clearSearch()" 
+                    <span class="w3-display-right w3-margin-right w3-text-grey clear-btn"
+                          onclick="clearSearch()"
                           style="cursor: pointer; z-index: 10;">
                         <i class="fa-solid fa-circle-xmark"></i>
                     </span>
@@ -42,8 +42,8 @@
             </div>
 
             <div class="search-item-btn w3-padding-small">
-                <button type="submit" 
-                        class="w3-button w3-theme w3-round-medium w3-block w3-small w3-bold" 
+                <button type="submit"
+                        class="w3-button w3-theme w3-round-medium w3-block w3-small w3-bold"
                         style="height: 36px;">
                     <i class="fa fa-solid fa-search w3-margin-right"></i><span class="w3-hide-small">Search</span>
                 </button>
@@ -56,7 +56,7 @@
 <script>
 function clearSearch() {
     const input = document.getElementById('search-input');
-    input.value = ''; 
+    input.value = '';
     document.getElementById('search-form').submit();
 }
 </script>
@@ -66,7 +66,7 @@ function clearSearch() {
     display: flex;
     gap: 8px;
     align-items: center;
-    width: 700px;
+    width: 500px;
 }
 
 .search-item-status { flex: 0 0 140px; }
@@ -85,15 +85,15 @@ function clearSearch() {
         gap: 6px;
         width: 100%;
     }
-    
+
     .search-item-status { flex: 1 1 20%; }
     .search-item-input  { flex: 1 1 50%; }
-    
-    .search-item-btn { 
-        flex: 1 1 10%; 
+
+    .search-item-btn {
+        flex: 1 1 10%;
         margin-top: 2px;
     }
-    
+
     .w3-padding-8 { padding: 8px !important; }
 }
 </style>

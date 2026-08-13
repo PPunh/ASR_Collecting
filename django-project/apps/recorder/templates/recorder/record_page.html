@@ -11,15 +11,25 @@
 {% block main-content %}
 <div class="w3-container">
     <div class="w3-card-4 w3-round-large w3-white w3-content">
-        
+
+        <!-- Hidden Input for Category ID -->
+        <input type="hidden" id="categoryId" value="{{ category.pk|default:'' }}">
+
         <!-- Header -->
         <div class="w3-container w3-theme w3-padding-16 w3-round-top-large">
-            <h3 class="w3-margin-0"><i class="fa fa-microphone w3-margin-right"></i>Recording your voice</h3>
+            <h3 class="w3-margin-0">
+                <i class="fa fa-microphone w3-margin-right"></i>
+                {% if category %}
+                    Recording voice for <span class="w3-bold">{{ category.name }}</span>
+                {% else %}
+                    Recording your voice
+                {% endif %}
+            </h3>
         </div>
 
         <!-- Content Body -->
         <div class="w3-container w3-padding-24">
-            
+
             <!-- Title Input -->
             <div class="w3-section">
                 <label class="w3-text-grey w3-bold">Voice Title</label>
@@ -48,8 +58,10 @@
 
             <!-- Action Link -->
             <div class="w3-section w3-center w3-padding-16 w3-border-top">
-                <a href="{% url 'recorder:recording_list' %}" class="w3-button w3-white w3-border w3-border-grey w3-round-large w3-hover-theme">
-                    <i class="fa fa-list w3-margin-right"></i>View your recording
+                <a id="viewListBtn"
+                   href="{% if category %}{% url 'recorder:recording_list' pk=category.pk %}{% else %}{% url 'recorder:category' %}{% endif %}"
+                   class="w3-button w3-white w3-border w3-border-grey w3-round-large w3-hover-theme">
+                    <i class="fa fa-list w3-margin-right"></i>View recordings
                 </a>
             </div>
 
@@ -66,12 +78,7 @@
     const status = document.getElementById('status');
     const playback = document.getElementById('playback');
     const titleInput = document.getElementById('titleInput');
-
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
+    const categoryId = document.getElementById('categoryId').value;
 
     startBtn.addEventListener('click', async () => {
         try {
@@ -89,21 +96,42 @@
                 formData.append('audio', audioBlob, 'recording.webm');
                 formData.append('title', titleInput.value);
 
+                // ส่ง Category ID แนบไปด้วยถ้ามี
+                if (categoryId) {
+                    formData.append('category', categoryId);
+                }
+
                 status.textContent = "Uploading...";
                 status.className = "w3-tag w3-round w3-amber w3-padding";
 
-                const res = await fetch("{% url 'recorder:upload_audio' %}", {
-                    method: 'POST',
-                    headers: { 'X-CSRFToken': getCookie('csrftoken') },
-                    body: formData
-                });
-                const data = await res.json();
-                
-                if (data.status === 'ok') {
-                    status.textContent = "Completed";
-                    status.className = "w3-tag w3-round w3-green w3-padding";
-                } else {
-                    status.textContent = "Errors";
+                try {
+                    const res = await fetch("{% url 'recorder:upload_audio' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: formData
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(`Server returned HTTP ${res.status}`);
+                    }
+
+                    const data = await res.json();
+
+                    if (data.status === 'ok') {
+                        status.textContent = "Completed";
+                        status.className = "w3-tag w3-round w3-green w3-padding";
+
+                        // ปิดกั้นการกด Start ซ้ำสำหรับคลิปเดิม และให้ผู้ใช้กดกลับไปดูรายการได้
+                        startBtn.disabled = false;
+                    } else {
+                        status.textContent = data.message || "Upload Failed";
+                        status.className = "w3-tag w3-round w3-red w3-padding";
+                    }
+                } catch (error) {
+                    console.error("Upload error:", error);
+                    status.textContent = "Upload Failed (Network/Server Error)";
                     status.className = "w3-tag w3-round w3-red w3-padding";
                 }
             };
@@ -114,13 +142,16 @@
             status.textContent = "Recording...";
             status.className = "w3-tag w3-round w3-red w3-animate-fading w3-padding";
         } catch (err) {
+            console.error("Microphone error:", err);
             status.textContent = "Microphone access denied";
             status.className = "w3-tag w3-round w3-red w3-padding";
         }
     });
 
     stopBtn.addEventListener('click', () => {
-        mediaRecorder.stop();
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+        }
         startBtn.disabled = false;
         stopBtn.disabled = true;
     });

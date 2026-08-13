@@ -1,93 +1,178 @@
 # coding=utf-8
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, View, TemplateView, DetailView
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
+from django.db.models import Count
 from apps.common.mixins import SearchFilterMixin
-from .models import VoiceRecordingModel
+from .models import VoiceRecordingModel, VoiceCategoryModel
+from .forms import VoiceCategoryForm
+
+class VoiceCategoryListView(SearchFilterMixin, ListView):
+    model = VoiceCategoryModel
+    template_name = "recorder/voice_category.html"
+    context_object_name = "items"
+    paginate_by = 20
+    search_fields = [
+        "name"
+    ]
+
+    def get_queryset(self):
+        return super().get_queryset().annotate(total_items=Count('category'))
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Category"
+        context['topic'] = "All Categories"
+        return context
+
+
+class VoiceCategoryCreateView(CreateView):
+    model = VoiceCategoryModel
+    template_name = "recorder/create_category.html"
+    form_class = VoiceCategoryForm
+    success_url = reverse_lazy("recorder:category")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Create New Category"
+        context["topic"] = "New Category"
+        return context
+
+
+class RecordingListView(SearchFilterMixin, ListView):
+    model = VoiceRecordingModel
+    template_name = "recorder/voices_list.html"
+    context_object_name = "items"
+    list_display = ["audio_file", "title", "created_by", "status", "reviewed_by"]
+    search_fields = ["title", "created_by", "reviewed_by"]
+    status_field = "status"
+    status_choices = VoiceRecordingModel.StatusChoices.choices
+    paginate_by = 20
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        category_pk = self.kwargs.get('pk')
+        if category_pk:
+            self.category = get_object_or_404(VoiceCategoryModel, pk=category_pk)
+            queryset = queryset.filter(category=self.category)
+        else:
+            self.category = None
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["category"] = self.category
+        if self.category:
+            context["title"] = f"Category: {self.category.name}"
+            context["topic"] = f"{self.category.name}"
+        else:
+            context["title"] = "All Recordings"
+            context["topic"] = "Voices Recorded List"
+        context["details_url_name"] = "recorder:details"
+        return context
+
+
 
 class RecordPageView(CreateView):
     """ Recording Page """
     model = VoiceRecordingModel
-    template_name = "recorder/record.html"
+    template_name = "recorder/record_page.html"
     fields = ['title', 'audio_file']
-    success_url = reverse_lazy('recorder:recording_list')
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        # category_id = self.kwargs.get('category_id') or request.GET.get('category')
+        # self.category = get_object_or_404(VoiceCategoryModel, pk=category_id) if category_id else None
+        category_id = self.kwargs.get('pk') or self.kwargs.get('category_id') or request.GET.get('category')
+        self.category = get_object_or_404(VoiceCategoryModel, pk=category_id) if category_id else None
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        if self.category:
+            form.instance.category = self.category
         return super().form_valid(form)
-        
+
+    def get_success_url(self):
+        if self.category:
+            return reverse('recorder:recording_list', kwargs={'pk': self.category.pk})
+        return reverse('recorder:category')
+
     def get_context_data(self, **kwargs):
-    	context = super().get_context_data(**kwargs)
-    	context["title"] = "Recording your voice"
-    	return context
+        context = super().get_context_data(**kwargs)
+        context["category"] = self.category
+        context["title"] = f"Recording voice for {self.category.name}" if self.category else "Recording your voice"
+        return context
 
 
+class UploadAudioView(View):
 
-class RecordingListView(SearchFilterMixin, ListView):
-	model = VoiceRecordingModel
-	template_name = "recorder/home.html"
-	context_object_name = "items"
-	list_display = ["audio_file", "title", "created_by", "status", "reviewed_by"]
-	search_fields = ["title"]
-	paginate_by = 20
-	ordering = ["-created_at"]
+    def post(self, request, *args, **kwargs):
+        audio = request.FILES.get('audio')
+        if not audio:
+            return JsonResponse({'status': 'error', 'message': 'No audio file provided'}, status=400)
 
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		context["title"] = "Voices List"
-		context["topic"] = "Voices Recorded List"
-		context["details_url_name"] = "recorder:details"
-		return context
+        title = request.POST.get('title', '').strip() or 'Untitled Recording'
 
+        # 1. Get category From FormData has send via JavaScript
+        category_id = request.POST.get('category')
 
-class UploadAuditoView(View):
-	""" Get audio from JS and save into DB """
-	def post(self, request, *args, **kwargs):
-		audio = request.FILES.get('audio')
-		if not audio:
-			return JsonResponse(
-				{
-					'status':'error',
-					'messages': "Not found",
-				}, status = 400
-			)
+        # 2. find Instance
+        category_obj = None
+        if category_id and category_id.isdigit():
+            category_obj = VoiceCategoryModel.objects.filter(pk=int(category_id)).first()
 
-		title = request.POST.get('title', '')
-		rec = VoiceRecordingModel.objects.create(audio_file = audio, title=title)
+        if not category_obj:
+            return JsonResponse({'status': 'error', 'message': 'Category is required'}, status=400)
 
-		return JsonResponse({
-			'status':'ok',
-			'id':rec.id,
-			'url':rec.audio_file.url,
-		})
+        rec = VoiceRecordingModel.objects.create(
+            audio_file=audio,
+            title=title,
+            category=category_obj,
+            created_by=request.user if request.user.is_authenticated else None
+        )
 
+        return JsonResponse({
+            'status': 'ok',
+            'id': rec.id,
+            'url': rec.audio_file.url,
+        })
 
 class ReviewVoiceDetailView(DetailView):
-	model = VoiceRecordingModel
-	template_name = "recorder/detail.html"
-	context_object_name = "object"
+    model = VoiceRecordingModel
+    template_name = "recorder/review.html"
+    context_object_name = "object"
 
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		context["title"] = "Detail"
-		context["topic"] = "Detail of Voice Recorded"
-		return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Detail"
+        context["topic"] = "Detail of Voice Recorded"
+        context["pending_status"] = self.object.status == "pending"
+        return context
 
-	def post(self, request, *args, **kwargs):
-		self.object = self.get_object()
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
 
-		action = request.POST.get('action')
-		comment = request.POST.get('comment', '').strip()
+        action = request.POST.get('action')
+        comment = request.POST.get('comment', '').strip()
 
-		# Check action from form
-		if action in ['approved', 'rejected']:
-			self.object.status = action
-			self.object.comment = comment
-			self.object.reviewed_by = request.user
-			self.object.reviewed_at = timezone.now()
-			self.object.save()
-		return redirect('recorder:details', pk=self.object.pk)
+        # Check action from form
+        if action in ['approved', 'rejected']:
+            self.object.status = action
+            self.object.comment = comment
+            self.object.reviewed_by = request.user
+            self.object.reviewed_at = timezone.now()
+            self.object.save()
+
+            if self.object.category:
+                return redirect('recorder:recording_list', pk=self.object.category.pk)
+            return redirect('recorder:category')
+
+        return redirect('recorder:details', pk=self.object.pk)

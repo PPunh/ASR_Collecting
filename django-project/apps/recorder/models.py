@@ -3,6 +3,24 @@ from django.db import models
 from apps.common.models import AuditModel
 from django.conf import settings
 
+# Category of Voice Recording
+class VoiceCategoryModel(models.Model):
+    name = models.CharField(
+        max_length = 255,
+        verbose_name = "Category",
+    )
+    description = models.TextField(
+        blank=True, null=True,
+        verbose_name = "Description"
+    )
+
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categorys"
+
+    def __str__(self):
+        return f"Category Name: {self.name}"
+
 class VoiceRecordingModel(AuditModel, models.Model):
     # Verify Status
     class StatusChoices(models.TextChoices):
@@ -10,6 +28,13 @@ class VoiceRecordingModel(AuditModel, models.Model):
         APPROVED = 'approved', 'Approved'
         REJECTED = 'rejected', 'Rejected'
 
+    category = models.ForeignKey(
+        VoiceCategoryModel,
+        on_delete = models.CASCADE,
+        verbose_name = "Category",
+        blank=True, null=True,
+        related_name = "category"
+    )
     audio_file = models.FileField(
         upload_to="recording/%Y/%m/%d/",
         verbose_name="Audio File"
@@ -18,7 +43,7 @@ class VoiceRecordingModel(AuditModel, models.Model):
         max_length=255,
         verbose_name="Title"
     )
-    
+
     status = models.CharField(
         max_length=10,
         choices=StatusChoices.choices,

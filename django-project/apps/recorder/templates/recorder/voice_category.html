@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block navigation_left %}
+    {% if user.is_authenticated %}
+        {% include 'recorder/components/recorder-sidebar.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block main-content %}
+<div class="w3-container w3-margin-bottom" style="max-width: 1200px; margin: 0 auto;">
+
+    <!-- Title Header -->
+    <div class="w3-margin-top">
+        <div class="w3-card-4 w3-white w3-round-large w3-margin-bottom w3-animate-opacity">
+                <div class="w3-container w3-padding-16 w3-display-container">
+                    <div class="w3-row w3-flex-center">
+                        <div class="w3-col m6 s12">
+                            <h3 class="w3-text-theme lao-noto" style="margin: 0; font-weight: bold;">
+                                <i class="fa fa-globe w3-margin-right w3-text-blue w3-spin"></i>
+                                {{ topic |upper }}
+                            </h3>
+                            <p class="w3-text-gray">
+                                <i class="fa fa-id-badge w3-margin-right"></i>
+                                <strong class="w3-tag w3-green w3-padding-small">{{items.count}}</strong>
+                                Records
+                            </p>
+                        </div>
+                        <div class="w3-col m6 s12">
+                            {% include "base_components/base_action.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <!-- Category Grid Container -->
+    <div class="w3-row-padding w3-margin-top" style="margin-left: -12px; margin-right: -12px;">
+        {% for item in items %}
+        <div class="w3-col s12 m6 l3 w3-margin-bottom">
+            <!-- Category Card -->
+
+            <div class="w3-card-2 w3-white w3-round-large w3-hover-shadow w3-border w3-border-light-grey"
+                 style="transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+
+                <!-- Card Header & Content -->
+                <div class="w3-container w3-padding-16">
+                    <div class="w3-flex-between" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <!-- Category Icon Badge -->
+                        <div class="w3-circle w3-theme-l4 w3-text-theme"
+                             style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                            <i class="fa fa-solid fa-folder-open"></i>
+                        </div>
+
+                        <!-- Badge Counter / Code -->
+                        {% if item.code %}
+                        <span class="w3-tag w3-light-grey w3-text-grey w3-round-medium w3-tiny w3-bold">
+                            {{ item.code }}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Category Title -->
+                    <h4 class="w3-medium w3-bold w3-text-dark-grey w3-margin-none" style="line-height: 1.4;">
+                        {{ item.name }}
+                    </h4>
+
+                    <!-- Category Description / Subtitle -->
+                    <p class="w3-tiny w3-text-grey w3-margin-top-8 w3-margin-bottom-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 32px;">
+                        {{ item.description|default:"No description available." }}
+                    </p>
+                </div>
+
+                <!-- Card Footer Action -->
+                <div class="w3-container w3-padding-12 w3-light-grey w3-border-top w3-border-light-grey w3-flex-between"
+                     style="display: flex; align-items: center; justify-content: space-between; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+
+                    <span class="w3-tiny w3-bold w3-text-grey">
+                        <i class="fa fa-solid fa-layer-group w3-margin-right"></i>
+                        {{ item.total_items|default:"0" }} items
+                    </span>
+
+                    <a href="{% url 'recorder:recording_list' pk=item.pk %}"
+                       class="w3-button w3-white w3-border w3-border-grey w3-round-medium w3-tiny w3-bold w3-hover-theme">
+                        View <i class="fa fa-solid fa-arrow-right w3-margin-left"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        {% empty %}
+        <!-- Empty State -->
+        <div class="w3-col s12 w3-margin-top">
+            <div class="w3-panel w3-light-grey w3-border w3-round-large w3-padding-24 w3-center">
+                <i class="fa fa-solid fa-folder-open w3-jumbo w3-text-grey"></i>
+                <h5 class="w3-bold w3-text-grey w3-margin-top">No categories found</h5>
+                <p class="w3-small w3-text-grey">There are no categories created yet.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<a href="{% url 'recorder:add_category' %}" class="w3-button w3-round-large w3-padding w3-theme">
+    <i class="fa fa-solid fa-plus w3-margin-right"></i>Add Category
+</a>
+{% endblock %}
