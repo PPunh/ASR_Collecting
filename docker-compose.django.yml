@@ -38,7 +38,7 @@ services:
                 fi && \
 
                 chmod -R 777 /django-project/certs && \
-
+                mkdir -p /django-project/media && chmod -R 777 /django-project/media && \
                 python3 manage.py wait_for_db && \
                 python3 manage.py makemigrations && \
                 python3 manage.py migrate && \
