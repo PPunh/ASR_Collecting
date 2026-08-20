@@ -1,11 +1,11 @@
 # coding=utf-8
 from django import forms
 from django.forms import ModelForm
-from .models import EmployiesModel
+from .models import EmployeeModel
 
-class EmployiesForm(forms.ModelForm):
+class EmployeeForm(forms.ModelForm):
     class Meta:
-        model = EmployiesModel
+        model = EmployeeModel
         exclude = ["created_at", "created_by", "modified_at", "modified_by", "code"]
 
     def __init__(self, *args, **kwargs):

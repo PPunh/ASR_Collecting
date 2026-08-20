@@ -35,7 +35,7 @@ class MultipleInlineFormsetMixin:
                 return apps.get_model(app_label, model_name)
             except ValueError:
                 raise ValueError(
-                    _("Model string '{model_config}' must be in format 'app_name.ModelName'").format(model_config=model_config)
+                    f"Model string '{model_config}' must be in format 'app_name.ModelName'"
                 )
         return model_config
 

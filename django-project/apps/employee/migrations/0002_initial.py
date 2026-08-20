@@ -11,28 +11,28 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('common', '0001_initial'),
-        ('employies', '0001_initial'),
+        ('employee', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='employiesmodel',
+            model_name='employeemodel',
             name='created_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_created_by', to=settings.AUTH_USER_MODEL, verbose_name='Created By'),
         ),
         migrations.AddField(
-            model_name='employiesmodel',
+            model_name='employeemodel',
             name='modified_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_modified_by', to=settings.AUTH_USER_MODEL, verbose_name='Modified By'),
         ),
         migrations.AddField(
-            model_name='employiesmodel',
+            model_name='employeemodel',
             name='province',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='common.provincemodel', verbose_name='Province'),
         ),
         migrations.AddField(
-            model_name='employiesmodel',
+            model_name='employeemodel',
             name='user',
             field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='Personal_info', to=settings.AUTH_USER_MODEL, verbose_name='User'),
         ),

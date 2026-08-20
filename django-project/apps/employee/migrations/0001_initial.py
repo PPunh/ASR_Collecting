@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='EmployiesModel',
+            name='EmployeeModel',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=60, verbose_name='Name')),
@@ -25,8 +25,8 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(blank=True, max_length=20, null=True, unique=True, verbose_name='Code')),
             ],
             options={
-                'verbose_name': 'Employies Information',
-                'verbose_name_plural': 'Employies Informations',
+                'verbose_name': 'Employee Information',
+                'verbose_name_plural': 'Employees Information',
             },
         ),
     ]

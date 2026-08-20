@@ -6,6 +6,11 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     """Custom user model inherited from default Django AUTH User model"""
+    # Custom Permission
+    class PermissionChoice(models.TextChoices):
+        USERS = 'users', 'Users'
+        AUTHENTICATORS = 'authenticators', 'Authenticators'
+        SUPERADMIN = 'superadmin', 'SuperAdmin'
 
     phone_regex = RegexValidator(
         regex=r"^\d{8}$",
@@ -33,6 +38,12 @@ class User(AbstractUser):
         blank=True,
         related_name='modified_users'
     )
+    role = models.CharField(
+        max_length=20,
+        choices=PermissionChoice.choices,
+        default=PermissionChoice.USERS,
+        verbose_name="ROLE"
+    )
 
     REQUIRED_FIELDS = ["email"]
 
@@ -44,5 +55,9 @@ class User(AbstractUser):
         return f"{self.username}"
 
     def save(self, *args, **kwargs):
+        if self.role == self.PermissionChoice.SUPERADMIN:
+            self.is_superuser = True
+
         self.is_staff = self.is_superuser
+
         super().save(*args, **kwargs)

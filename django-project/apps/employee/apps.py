@@ -2,8 +2,8 @@ from django.apps import AppConfig
 
 
 # make sure to update AppClassName and App name
-class EmployiesConfig(AppConfig):
+class EmployeeConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = 'apps.employies'
-    verbose_name = 'Employies'
-    label = 'employies'
+    name = 'apps.employee'
+    verbose_name = 'Employee'
+    label = 'employee'

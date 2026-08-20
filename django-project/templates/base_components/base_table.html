@@ -31,12 +31,26 @@
 
                                     {% elif header.field == 'audio_file' %}
                                         {% if value %}
-                                            <audio controls style="height: 36px; max-width: 240px;" class="w3-round">
-                                                <source src="{{ value.url }}" type="audio/webm">
-                                                <source src="{{ value.url }}" type="audio/mpeg">
-                                                <source src="{{ value.url }}" type="audio/wav">
-                                                Your browser does not support the audio element.
-                                            </audio>
+                                            <div class="w3-flex" style="display: flex; align-items: center; gap: 10px;">
+                                                <audio controls style="height: 36px; max-width: 240px;" class="w3-round">
+                                                    <source src="{{ value.url }}" type="audio/webm">
+                                                    <source src="{{ value.url }}" type="audio/mpeg">
+                                                    <source src="{{ value.url }}" type="audio/wav">
+                                                    Your browser does not support the audio element.
+                                                </audio>
+                                                {% if download_url_name %}
+                                                    {% if item.status == 'approved' %}
+                                                        <a href="{% url download_url_name pk=item.pk %}"
+                                                           class="w3-button w3-theme w3-small w3-round" title="Download audio">
+                                                            <i class="fa fa-download"></i>
+                                                        </a>
+                                                    {% else %}
+                                                        <button class="w3-button w3-light-grey w3-small w3-round" disabled title="Available after approval">
+                                                            <i class="fa fa-lock"></i>
+                                                        </button>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
                                         {% else %}
                                             <span class="w3-text-gray">-</span>
                                         {% endif %}

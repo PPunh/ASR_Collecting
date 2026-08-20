@@ -37,7 +37,7 @@ urlpatterns = [
     path('chaining/', include('smart_selects.urls')), # SMART_CHAIN
     path('', include('apps.recorder.urls', namespace='recorder')),
     path('users/', include('apps.users.urls', namespace='users')),
-    path('employies/', include('apps.employies.urls', namespace='employies')),
+    path('employee/', include('apps.employee.urls', namespace='employee')),
 
 ]
 

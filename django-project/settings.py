@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     # usage: apps.app_name
     'apps.users', # custom users app, extending the default built-in Django Auth
     'apps.common',
-    'apps.employies',
+    'apps.employee',
     'apps.recorder',
 ]
 
@@ -101,7 +101,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'apps.users.context_processors.theme_settings',
             ],
         },
     },

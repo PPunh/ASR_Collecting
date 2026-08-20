@@ -23,4 +23,6 @@ urlpatterns = [
     path('upload-audio/', views.UploadAudioView.as_view(), name='upload_audio'),
 
     path('details/<int:pk>/', views.ReviewVoiceDetailView.as_view(), name="details"),
+
+    path('download/<int:pk>/', views.DownloadAudioView.as_view(), name="download_audio"),
 ]

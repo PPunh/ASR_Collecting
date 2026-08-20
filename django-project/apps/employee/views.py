@@ -4,34 +4,34 @@ from django.views.generic import ListView, CreateView, DetailView
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from apps.common.mixins import SearchFilterMixin, MultipleInlineFormsetMixin
-from .models import EmployiesModel
-from .forms import EmployiesForm
+from .models import EmployeeModel
+from .forms import EmployeeForm
 from apps.users.models import User
 from apps.users.forms import CustomUserCreationForm
 
-class EmployiesListView(SearchFilterMixin, ListView):
-	model = EmployiesModel
-	template_name = "employies/list.html"
+class EmployeeListView(SearchFilterMixin, ListView):
+	model = EmployeeModel
+	template_name = "employee/list.html"
 	context_object_name = "items"
 	list_display = ["code", "name", "sur_name", "province", "district", "village"]
-	base_urlname = "employies"
+	base_urlname = "employee"
 	search_fields = ["code", "name", "sur_name"]
 
 	def get_context_data(self, *args, **kwargs):
 		context = super().get_context_data(*args, **kwargs)
-		context['title'] = "Employies"
-		context['topic'] = "All Employies"
-		context["details_url_name"] = "employies:details"
+		context['title'] = "Employee"
+		context['topic'] = "All Employees"
+		context["details_url_name"] = "employee:details"
 		return context
 
-class EmployiesCreateView(MultipleInlineFormsetMixin, CreateView):
+class EmployeeCreateView(MultipleInlineFormsetMixin, CreateView):
 	model = User
 	form_class = CustomUserCreationForm
-	template_name = "employies/add.html"
+	template_name = "employee/add.html"
 	inline_formsets = [
 		{
-			'model': EmployiesModel,
-            'form': EmployiesForm,
+			'model': EmployeeModel,
+            'form': EmployeeForm,
             'extra': 1,
             'can_delete': False,
             'formset_name': 'employee_formset',
@@ -44,7 +44,7 @@ class EmployiesCreateView(MultipleInlineFormsetMixin, CreateView):
 			"Create new user successfully"
 		)
 		return reverse(
-			"employies:list"
+			"employee:list"
 		)
 
 	def get_context_data(self, **kwargs):
@@ -53,13 +53,13 @@ class EmployiesCreateView(MultipleInlineFormsetMixin, CreateView):
 		return context
 
 
-class EmpployiesDetailView(DetailView):
-	model = EmployiesModel
-	template_name = "employies/details.html"
+class EmployeeDetailView(DetailView):
+	model = EmployeeModel
+	template_name = "employee/details.html"
 	context_object_name = "items"
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context['title'] = "Employee Details"
-		context['topic'] = "Employies Details"
+		context['topic'] = "Employee Details"
 		return context

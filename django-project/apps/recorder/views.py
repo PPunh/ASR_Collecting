@@ -1,7 +1,9 @@
 # coding=utf-8
+import os
+import re
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, View, TemplateView, DetailView
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.urls import reverse_lazy, reverse
@@ -49,7 +51,7 @@ class RecordingListView(SearchFilterMixin, ListView):
     template_name = "recorder/voices_list.html"
     context_object_name = "items"
     list_display = ["audio_file", "title", "created_by", "status", "reviewed_by"]
-    search_fields = ["title", "created_by", "reviewed_by"]
+    search_fields = ["title", "created_by__username", "reviewed_by__username"]
     status_field = "status"
     status_choices = VoiceRecordingModel.StatusChoices.choices
     paginate_by = 20
@@ -77,6 +79,7 @@ class RecordingListView(SearchFilterMixin, ListView):
             context["title"] = "All Recordings"
             context["topic"] = "Voices Recorded List"
         context["details_url_name"] = "recorder:details"
+        context["download_url_name"] = "recorder:download_audio"
         return context
 
 
@@ -120,6 +123,7 @@ class UploadAudioView(View):
             return JsonResponse({'status': 'error', 'message': 'No audio file provided'}, status=400)
 
         title = request.POST.get('title', '').strip() or 'Untitled Recording'
+        script=request.POST.get('script', '')
 
         # 1. Get category From FormData has send via JavaScript
         category_id = request.POST.get('category')
@@ -135,6 +139,7 @@ class UploadAudioView(View):
         rec = VoiceRecordingModel.objects.create(
             audio_file=audio,
             title=title,
+            script = script,
             category=category_obj,
             created_by=request.user if request.user.is_authenticated else None
         )
@@ -176,3 +181,34 @@ class ReviewVoiceDetailView(DetailView):
             return redirect('recorder:category')
 
         return redirect('recorder:details', pk=self.object.pk)
+
+
+class DownloadAudioView(View):
+    """ Stream the recording as an attachment named after its title """
+
+    def get(self, request, *args, **kwargs):
+        rec = get_object_or_404(VoiceRecordingModel, pk=kwargs.get('pk'))
+
+        if rec.status != VoiceRecordingModel.StatusChoices.APPROVED:
+            return JsonResponse({'status': 'error', 'message': 'Not available until approved'}, status=403)
+
+        if not rec.audio_file:
+            return JsonResponse({'status': 'error', 'message': 'No audio file attached'}, status=404)
+
+        # Keep the real extension of the stored file (webm / mpeg / wav ...)
+        _, ext = os.path.splitext(rec.audio_file.name)
+        if not ext:
+            ext = ".webm"
+
+        # Build a safe filename from the title
+        title = rec.title.strip() or f"recording-{rec.pk}"
+        safe_title = re.sub(r'[\\/:*?"<>|]+', '_', title)
+        safe_title = re.sub(r'\s+', ' ', safe_title).strip(' ._')
+        safe_title = safe_title[:50]
+
+        response = FileResponse(
+            rec.audio_file.open('rb'),
+            as_attachment=True,
+            filename=f"{safe_title}{ext}",
+        )
+        return response

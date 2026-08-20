@@ -33,7 +33,12 @@
             <!-- Title Input -->
             <div class="w3-section">
                 <label class="w3-text-grey w3-bold">Voice Title</label>
-                <input class="w3-input w3-border w3-round-large w3-margin-top" type="text" id="titleInput" placeholder="Enter voice title...">
+                <input class="w3-input w3-border w3-round-large w3-margin-top" type="text" id="titleInput" placeholder="Enter voice Script...">
+            </div>
+            <!-- Script Input -->
+            <div class="w3-section">
+                <label class="w3-text-grey w3-bold">Voice Script</label>
+                <input class="w3-input w3-border w3-round-large w3-margin-top" type="text" id="scriptInput" placeholder="Enter voice title...">
             </div>
 
             <!-- Controls (Buttons) -->
@@ -78,6 +83,7 @@
     const status = document.getElementById('status');
     const playback = document.getElementById('playback');
     const titleInput = document.getElementById('titleInput');
+    const scriptInput = document.getElementById('scriptInput');
     const categoryId = document.getElementById('categoryId').value;
 
     startBtn.addEventListener('click', async () => {
@@ -95,8 +101,8 @@
                 const formData = new FormData();
                 formData.append('audio', audioBlob, 'recording.webm');
                 formData.append('title', titleInput.value);
+                formData.append('script', scriptInput.value);
 
-                // ส่ง Category ID แนบไปด้วยถ้ามี
                 if (categoryId) {
                     formData.append('category', categoryId);
                 }
@@ -123,7 +129,6 @@
                         status.textContent = "Completed";
                         status.className = "w3-tag w3-round w3-green w3-padding";
 
-                        // ปิดกั้นการกด Start ซ้ำสำหรับคลิปเดิม และให้ผู้ใช้กดกลับไปดูรายการได้
                         startBtn.disabled = false;
                     } else {
                         status.textContent = data.message || "Upload Failed";

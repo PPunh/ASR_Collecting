@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from apps.common.models import PersonalInfoModel, AuditModel, CodeGenerationModel
 
-class EmployiesModel(PersonalInfoModel, AuditModel, CodeGenerationModel):
+class EmployeeModel(PersonalInfoModel, AuditModel, CodeGenerationModel):
     code = models.CharField(
         max_length=20,
         unique=True, blank=True, null=True,
@@ -18,8 +18,8 @@ class EmployiesModel(PersonalInfoModel, AuditModel, CodeGenerationModel):
     )
 
     class Meta:
-        verbose_name = "Employies Information"
-        verbose_name_plural = "Employies Informations"
+        verbose_name = "Employee Information"
+        verbose_name_plural = "Employees Information"
 
     def __str__(self):
         return f"{self.name} - {self.sur_name}"

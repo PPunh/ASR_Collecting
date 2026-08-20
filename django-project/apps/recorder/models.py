@@ -43,6 +43,10 @@ class VoiceRecordingModel(AuditModel, models.Model):
         max_length=255,
         verbose_name="Title"
     )
+    script = models.TextField(
+        blank=True, null=True,
+        verbose_name = "Script"
+    )
 
     status = models.CharField(
         max_length=10,

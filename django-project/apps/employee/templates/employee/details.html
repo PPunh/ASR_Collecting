@@ -4,7 +4,7 @@
 
 {% block navigation_left %}
     {% if user.is_authenticated %}
-        {% include 'employies/components/employies-sidebar.html' %}
+        {% include 'employee/components/employee-sidebar.html' %}
     {% endif %}
 {% endblock %}
 
@@ -42,7 +42,7 @@
                 {% endif %}
             </div>
 
-            {% if perms.employies.change_employiesmodel %}
+            {% if perms.employee.change_employeemodel %}
                 <div class="w3-container">
                     <a href="#" class="w3-button w3-white w3-hover-black w3-round w3-padding">
                         <i class="fa fa-solid fa-pencil"></i>
@@ -127,13 +127,13 @@
                     <div class="w3-col m6 l3 w3-margin-bottom">
                         <div class="w3-card w3-light-grey w3-padding w3-round-medium w3-border">
                             <div class="w3-tiny w3-bold w3-text-grey w3-margin-bottom"><i class="fa-regular fa-clock w3-margin-right"></i>UPDATED AT</div>
-                            <div class="w3-small w3-bold w3-text-dark-grey">{{ object.updated_at|date:"d M Y, H:i"|default:"-" }}</div>
+                            <div class="w3-small w3-bold w3-text-dark-grey">{{ object.modified_at|date:"d M Y, H:i"|default:"-" }}</div>
                         </div>
                     </div>
                     <div class="w3-col m6 l3 w3-margin-bottom">
                         <div class="w3-card w3-light-grey w3-padding w3-round-medium w3-border">
                             <div class="w3-tiny w3-bold w3-text-grey w3-margin-bottom"><i class="fa-regular fa-pen-to-square w3-margin-right"></i>UPDATED BY</div>
-                            <div class="w3-small w3-bold w3-text-dark-grey">{{ object.updated_by|default:"-" }}</div>
+                            <div class="w3-small w3-bold w3-text-dark-grey">{{ object.modified_by|default:"-" }}</div>
                         </div>
                     </div>
                 </div>

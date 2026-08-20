@@ -4,14 +4,14 @@
 
 {% block navigation_left %}
     {% if user.is_authenticated %}
-        {% include 'employies/components/employies-sidebar.html' %}
+        {% include 'employee/components/employee-sidebar.html' %}
     {% endif %}
 {% endblock %}
 
 {% block main-content %}
 <div class="w3-container">
     <div class="w3-margin-top">
-        <form method="post", enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="w3-card w3-round-large w3-padding">
                 <h3 class="w3-panel w3-theme w3-padding w3-round-large">User information</h3>
@@ -19,7 +19,7 @@
             </div>
 
             <div class="w3-card w3-round-large w3-padding w3-margin-top">
-                <h3 class="w3-panel w3-theme w3-padding w3-round-large">Employies information</h3>
+                <h3 class="w3-panel w3-theme w3-padding w3-round-large">Employee information</h3>
                 {% include "snippets/formset_generic.html" with formset=employee_formset %}
             </div>
 
