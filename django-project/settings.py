@@ -27,7 +27,24 @@ SECRET_KEY = 'django-insecure-04p-1al#avxqx*snktubg%hihlx-8$fhm#e@h%+8oznn(t09nt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["uat.app.asr.alotechnologygroup.com", "10.8.61.12", "127.0.0.1", "localhost"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://uat.app.asr.alotechnologygroup.com",
+    "http://uat.app.asr.alotechnologygroup.com",
+    "https://*.alotechnologygroup.com",
+
+    # HTTPS
+    "https://localhost:8000",
+    "https://127.0.0.1:8000",
+    "https://10.8.61.12:8000",
+
+    # HTTP
+    "http://localhost:8001",
+    "http://127.0.0.1:8001",
+    "http://10.8.61.12:8001",
+]
+
 
 # Application defination
 INSTALLED_APPS = [
