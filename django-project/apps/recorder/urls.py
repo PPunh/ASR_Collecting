@@ -18,7 +18,9 @@ urlpatterns = [
 
     path('recording_list/<int:pk>/', views.RecordingListView.as_view(), name='recording_list'),
 
-    path('category/<int:pk>/record/', views.RecordPageView.as_view(), name='record_voice'),
+    path('add_task/<int:pk>/', views.VoiceTaskCreateView.as_view(), name='add_task'),
+
+    path('task/<int:pk>/record/', views.RecordPageView.as_view(), name='record_task'),
 
     path('upload-audio/', views.UploadAudioView.as_view(), name='upload_audio'),
 

@@ -11,8 +11,8 @@ from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.db.models import Count
 from apps.common.mixins import SearchFilterMixin, SuperAdminRequiredMixin
-from .models import VoiceRecordingModel, VoiceCategoryModel
-from .forms import VoiceCategoryForm
+from .models import VoiceRecordingModel, VoiceCategoryModel, VoiceTaskModel
+from .forms import VoiceCategoryForm, VoiceTaskForm
 
 class VoiceCategoryListView(LoginRequiredMixin, SearchFilterMixin, ListView):
     model = VoiceCategoryModel
@@ -47,12 +47,37 @@ class VoiceCategoryCreateView(SuperAdminRequiredMixin, CreateView):
         return context
 
 
+class VoiceTaskCreateView(SuperAdminRequiredMixin, CreateView):
+    """ Create a recording task (title + script) inside a category """
+    model = VoiceTaskModel
+    template_name = "recorder/create_task.html"
+    form_class = VoiceTaskForm
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.category = get_object_or_404(VoiceCategoryModel, pk=kwargs.get('pk'))
+
+    def form_valid(self, form):
+        form.instance.category = self.category
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('recorder:recording_list', kwargs={'pk': self.category.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["category"] = self.category
+        context["title"] = f"Create Task in {self.category.name}"
+        context["topic"] = "New Voice Task"
+        return context
+
+
 class RecordingListView(LoginRequiredMixin, SearchFilterMixin, ListView):
     model = VoiceRecordingModel
     template_name = "recorder/voices_list.html"
     context_object_name = "items"
-    list_display = ["audio_file", "title", "created_by", "status", "reviewed_by"]
-    search_fields = ["title", "created_by__username", "reviewed_by__username"]
+    list_display = ["audio_file", "task", "title", "created_by", "status", "reviewed_by"]
+    search_fields = ["title", "task__title", "created_by__username", "reviewed_by__username"]
     status_field = "status"
     status_choices = VoiceRecordingModel.StatusChoices.choices
     paginate_by = 20
@@ -81,38 +106,40 @@ class RecordingListView(LoginRequiredMixin, SearchFilterMixin, ListView):
             context["topic"] = "Voices Recorded List"
         context["details_url_name"] = "recorder:details"
         context["download_url_name"] = "recorder:download_audio"
+        context["tasks"] = self.category.tasks.all() if self.category else []
         return context
 
 
 
 class RecordPageView(LoginRequiredMixin, CreateView):
-    """ Recording Page """
+    """ Recording Page: user records a voice reading a task's script """
     model = VoiceRecordingModel
     template_name = "recorder/record_page.html"
-    fields = ['title', 'audio_file']
+    fields = ['audio_file']
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        # category_id = self.kwargs.get('category_id') or request.GET.get('category')
-        # self.category = get_object_or_404(VoiceCategoryModel, pk=category_id) if category_id else None
-        category_id = self.kwargs.get('pk') or self.kwargs.get('category_id') or request.GET.get('category')
-        self.category = get_object_or_404(VoiceCategoryModel, pk=category_id) if category_id else None
+        self.task = get_object_or_404(VoiceTaskModel, pk=kwargs.get('pk'))
+        self.category = self.task.category
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
-        if self.category:
-            form.instance.category = self.category
+        form.instance.category = self.category
+        form.instance.task = self.task
+        # Copy task title/script into the recording for display & download naming
+        form.instance.title = self.task.title
+        form.instance.script = self.task.script
         return super().form_valid(form)
 
     def get_success_url(self):
-        if self.category:
-            return reverse('recorder:recording_list', kwargs={'pk': self.category.pk})
-        return reverse('recorder:category')
+        return reverse('recorder:recording_list', kwargs={'pk': self.category.pk})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["category"] = self.category
-        context["title"] = f"Recording voice for {self.category.name}" if self.category else "Recording your voice"
+        context["task"] = self.task
+        context["title"] = f"Recording: {self.task.title}"
+        context["topic"] = self.task.title
         return context
 
 
@@ -123,25 +150,27 @@ class UploadAudioView(LoginRequiredMixin, View):
         if not audio:
             return JsonResponse({'status': 'error', 'message': 'No audio file provided'}, status=400)
 
-        title = request.POST.get('title', '').strip() or 'Untitled Recording'
-        script=request.POST.get('script', '')
+        # 1. Get task from FormData (sent via JavaScript)
+        task_id = request.POST.get('task')
 
-        # 1. Get category From FormData has send via JavaScript
-        category_id = request.POST.get('category')
+        # 2. Find task instance
+        task_obj = None
+        if task_id and task_id.isdigit():
+            task_obj = VoiceTaskModel.objects.filter(pk=int(task_id)).first()
 
-        # 2. find Instance
-        category_obj = None
-        if category_id and category_id.isdigit():
-            category_obj = VoiceCategoryModel.objects.filter(pk=int(category_id)).first()
+        if not task_obj:
+            return JsonResponse({'status': 'error', 'message': 'Task is required'}, status=400)
 
-        if not category_obj:
-            return JsonResponse({'status': 'error', 'message': 'Category is required'}, status=400)
+        # Title & script come from the task (fallback to posted values)
+        title = task_obj.title or request.POST.get('title', '').strip() or 'Untitled Recording'
+        script = task_obj.script or request.POST.get('script', '').strip()
 
         rec = VoiceRecordingModel.objects.create(
             audio_file=audio,
             title=title,
-            script = script,
-            category=category_obj,
+            script=script,
+            category=task_obj.category,
+            task=task_obj,
             created_by=request.user if request.user.is_authenticated else None
         )
 

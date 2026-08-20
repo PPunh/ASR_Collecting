@@ -12,13 +12,72 @@
     <div class="w3-container">
     <div class="w3-margin-top">
         {% include 'base_components/base_title.html' %}
-        <a href="{% url 'recorder:record_voice' pk=category.pk %}"
-            class="w3-bar-item w3-button w3-round-large w3-theme w3-margin-top">
-            <i class="fa fa-plus w3-margin-right"></i>
-            Add new record
-        </a>
     </div>
+
+    <!-- Tasks Section -->
     <div class="w3-margin-top">
+        <div class="w3-card-4 w3-white w3-round-xlarge">
+            <div class="w3-container w3-padding-16 w3-theme w3-round-top-large">
+                <div class="w3-flex-between" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <h4 class="w3-margin-none w3-bold">
+                        <i class="fa fa-tasks w3-margin-right"></i>Tasks
+                        <span class="w3-tag w3-white w3-text-theme w3-round w3-margin-left">{{ tasks|length }}</span>
+                    </h4>
+                    {% if user.is_superadmin %}
+                        <a href="{% url 'recorder:add_task' pk=category.pk %}"
+                           class="w3-button w3-white w3-text-theme w3-round-large w3-bold w3-small">
+                            <i class="fa fa-plus w3-margin-right"></i>Add Task
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="w3-container w3-padding">
+                {% if tasks %}
+                    <div class="w3-row-padding" style="margin: 0 -8px;">
+                        {% for task in tasks %}
+                            <div class="w3-col s12 m6 l4 w3-padding" style="padding: 8px;">
+                                <div class="w3-card-2 w3-light-grey w3-round-large w3-border w3-hover-shadow"
+                                     style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                                    <div class="w3-container w3-padding">
+                                        <strong class="w3-text-dark-grey">{{ task.title }}</strong>
+                                        <p class="w3-tiny w3-text-grey w3-margin-top-4"
+                                           style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                            {{ task.script }}
+                                        </p>
+                                        <span class="w3-tag w3-white w3-round w3-tiny w3-text-grey">
+                                            <i class="fa fa-microphone w3-margin-right"></i>{{ task.recordings.count }} recordings
+                                        </span>
+                                    </div>
+                                    <div class="w3-container w3-padding-bottom w3-padding-top">
+                                        <a href="{% url 'recorder:record_task' pk=task.pk %}"
+                                           class="w3-button w3-theme w3-round-large w3-small w3-bold w3-block w3-margin-bottom">
+                                            <i class="fa fa-microphone w3-margin-right"></i>Record Voice
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="w3-panel w3-light-grey w3-border w3-round w3-center w3-padding-16 w3-text-grey">
+                        <i class="fa fa-folder-open-o w3-text-grey" style="font-size: 32px;"></i>
+                        <p class="w3-margin-top-8 w3-small">No tasks yet in this category.</p>
+                        {% if user.is_superadmin %}
+                            <a href="{% url 'recorder:add_task' pk=category.pk %}" class="w3-button w3-theme w3-round-large w3-small">
+                                <i class="fa fa-plus w3-margin-right"></i>Add Task
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recordings List -->
+    <div class="w3-margin-top">
+        <h5 class="w3-bold w3-text-dark-grey w3-margin-bottom">
+            <i class="fa fa-list w3-margin-right w3-text-theme"></i>Recordings
+        </h5>
         {% include 'base_components/base_table.html' %}
     </div>
 </div>

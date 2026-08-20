@@ -12,33 +12,28 @@
 <div class="w3-container">
     <div class="w3-card-4 w3-round-large w3-white w3-content">
 
-        <!-- Hidden Input for Category ID -->
-        <input type="hidden" id="categoryId" value="{{ category.pk|default:'' }}">
+        <!-- Hidden Input for Task ID -->
+        <input type="hidden" id="taskId" value="{{ task.pk|default:'' }}">
 
         <!-- Header -->
         <div class="w3-container w3-theme w3-padding-16 w3-round-top-large">
             <h3 class="w3-margin-0">
                 <i class="fa fa-microphone w3-margin-right"></i>
-                {% if category %}
-                    Recording voice for <span class="w3-bold">{{ category.name }}</span>
-                {% else %}
-                    Recording your voice
-                {% endif %}
+                Recording: <span class="w3-bold">{{ task.title }}</span>
             </h3>
         </div>
 
         <!-- Content Body -->
         <div class="w3-container w3-padding-24">
 
-            <!-- Title Input -->
-            <div class="w3-section">
-                <label class="w3-text-grey w3-bold">Voice Title</label>
-                <input class="w3-input w3-border w3-round-large w3-margin-top" type="text" id="titleInput" placeholder="Enter voice Script...">
-            </div>
-            <!-- Script Input -->
-            <div class="w3-section">
-                <label class="w3-text-grey w3-bold">Voice Script</label>
-                <input class="w3-input w3-border w3-round-large w3-margin-top" type="text" id="scriptInput" placeholder="Enter voice title...">
+            <!-- Script to read -->
+            <div class="w3-section w3-light-grey w3-padding-16 w3-round-large w3-border">
+                <label class="w3-tiny w3-bold w3-text-grey w3-block w3-margin-bottom" style="letter-spacing: 1px;">
+                    <i class="fa-solid fa-book-open w3-margin-right"></i>READ THIS SCRIPT
+                </label>
+                <p class="w3-medium lao-noto w3-text-dark-grey" style="white-space: pre-line;">
+                    {{ task.script }}
+                </p>
             </div>
 
             <!-- Controls (Buttons) -->
@@ -64,7 +59,7 @@
             <!-- Action Link -->
             <div class="w3-section w3-center w3-padding-16 w3-border-top">
                 <a id="viewListBtn"
-                   href="{% if category %}{% url 'recorder:recording_list' pk=category.pk %}{% else %}{% url 'recorder:category' %}{% endif %}"
+                   href="{% url 'recorder:recording_list' pk=category.pk %}"
                    class="w3-button w3-white w3-border w3-border-grey w3-round-large w3-hover-theme">
                     <i class="fa fa-list w3-margin-right"></i>View recordings
                 </a>
@@ -83,9 +78,7 @@
     const stopBtn = document.getElementById('stopBtn');
     const status = document.getElementById('status');
     const playback = document.getElementById('playback');
-    const titleInput = document.getElementById('titleInput');
-    const scriptInput = document.getElementById('scriptInput');
-    const categoryId = document.getElementById('categoryId').value;
+    const taskId = document.getElementById('taskId').value;
 
     startBtn.addEventListener('click', async () => {
         try {
@@ -106,12 +99,7 @@
 
                 const formData = new FormData();
                 formData.append('audio', audioBlob, 'recording' + ext);
-                formData.append('title', titleInput.value);
-                formData.append('script', scriptInput.value);
-
-                if (categoryId) {
-                    formData.append('category', categoryId);
-                }
+                formData.append('task', taskId);
 
                 status.textContent = "Uploading...";
                 status.className = "w3-tag w3-round w3-amber w3-padding";
