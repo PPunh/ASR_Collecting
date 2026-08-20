@@ -8,8 +8,14 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
 """
 
 import os
-from django.conf import settings
+import sys
+from pathlib import Path
+
 from django.core.wsgi import get_wsgi_application
+
+# Ensure this directory is on sys.path so 'settings', 'urls', 'middleware',
+# and 'apps.*' can be imported when PythonAnywhere loads this WSGI file.
+sys.path.append(str(Path(__file__).resolve().parent))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 

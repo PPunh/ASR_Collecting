@@ -13,21 +13,29 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os, sys
 from pathlib import Path
 from django.urls import reverse_lazy
+from decouple import AutoConfig, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
+
+# Load configuration from a .env file located in this directory (and its
+# parents). Pinning the search path here means it works regardless of the
+# current working directory (important on PythonAnywhere's WSGI server).
+config = AutoConfig(search_path=str(BASE_DIR))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-04p-1al#avxqx*snktubg%hihlx-8$fhm#e@h%+8oznn(t09nt'
+# Set SECRET_KEY in .env (or an environment variable) on PythonAnywhere.
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-04p-1al#avxqx*snktubg%hihlx-8$fhm#e@h%+8oznn(t09nt')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+# Comma-separated list in .env, e.g. ALLOWED_HOSTS=yourname.pythonanywhere.com,127.0.0.1
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 
 # Application defination
 INSTALLED_APPS = [
@@ -37,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.postgres',
 
     # 3rd party apps
     'rest_framework',
@@ -110,15 +117,16 @@ WSGI_APPLICATION = 'wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
+# Defaults to SQLite (used on PythonAnywhere free tier).
+# To use MySQL/PostgreSQL on PythonAnywhere, set DB_* values in .env.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.environ.get('POSTGRES_HOST'),
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'PORT': '5432',
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
+        'NAME': config('DB_NAME', default=str(BASE_DIR / 'sqlite' / 'db.sqlite3')),
+        'HOST': config('DB_HOST', default=''),
+        'PORT': config('DB_PORT', default=''),
+        'USER': config('DB_USER', default=''),
+        'PASSWORD': config('DB_PASSWORD', default=''),
         'OPTIONS': {
             # tell django to use additional schema
             #'options': '-c search_path=public,fees',
@@ -151,7 +159,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # when DEBUG = True, disable cache during development
-# when DEBUG = False, use memcached as cache in production
+# when DEBUG = False, use a local memory cache. PythonAnywhere does not
+# provide memcached, so do NOT use the PyMemcacheCache backend there.
 if DEBUG:
     CACHES = {
         'default': {
@@ -161,11 +170,7 @@ if DEBUG:
 else:
     CACHES = {
         'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-            'LOCATION': [
-                'memcached:11211', # memcached = docker service name, use this if you use the included docker files
-                #'127.0.0.1:11211', # use this if you don't use the included docker files
-            ]
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         }
     }
 

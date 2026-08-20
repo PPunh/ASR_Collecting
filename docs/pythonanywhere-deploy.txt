@@ -1,0 +1,111 @@
+=====================================================================
+Deploying ASR_Collecting on PythonAnywhere (free tier, SQLite)
+=====================================================================
+
+This branch is adapted for PythonAnywhere. The Docker files (Dockerfile,
+docker-compose*.yml, entrypoint.sh) are NOT used on PythonAnywhere.
+
+Key differences from the Docker setup:
+  - Database  : SQLite (django-project/sqlite/db.sqlite3) by default.
+  - Cache     : LocMemCache (PythonAnywhere has no memcached).
+  - Web server: PythonAnywhere's WSGI server (no CherryPy/runserver).
+  - Static    : served via the PythonAnywhere "Static files" mappings.
+
+---------------------------------------------------------------------
+1. Create the site
+---------------------------------------------------------------------
+  - Sign in at https://www.pythonanywhere.com
+  - Consoles -> Bash console
+  - Choose the Python version used by your account (3.10 / 3.11 / 3.12).
+
+---------------------------------------------------------------------
+2. Get the code
+---------------------------------------------------------------------
+    git clone https://github.com/<you>/ASR_Collecting.git
+    cd ASR_Collecting
+    git checkout python_anywhere
+
+---------------------------------------------------------------------
+3. Create a virtualenv and install requirements
+---------------------------------------------------------------------
+    mkvirtualenv --python=python3.12 asr_collecting
+    pip install --upgrade pip
+    pip install -r requirements/pythonanywhere.txt
+
+    (mkvirtualenv comes from virtualenvwrapper, which is already
+     installed on PythonAnywhere. Using it makes the Web tab config
+     trivial: point the virtualenv at /home/<you>/.virtualenvs/asr_collecting)
+
+---------------------------------------------------------------------
+4. Create the .env file
+---------------------------------------------------------------------
+    cd django-project
+    cp ../.env.example .env
+    nano .env   # set SECRET_KEY and ALLOWED_HOSTS
+    cd ..
+
+  On the free tier, ALLOWED_HOSTS should be:
+      yourusername.pythonanywhere.com,127.0.0.1,localhost
+
+---------------------------------------------------------------------
+5. Prepare the database and static files
+---------------------------------------------------------------------
+    cd django-project
+    python manage.py makemigrations
+    python manage.py migrate
+    python manage.py collectstatic --noinput
+    python manage.py createsuperuser   # optional, for the admin site
+    cd ..
+
+  The SQLite file is created at django-project/sqlite/db.sqlite3.
+  The collected static files land in django-project/static/.
+
+---------------------------------------------------------------------
+6. Web tab configuration
+---------------------------------------------------------------------
+  Go to the "Web" tab, click "Add a new web app", choose "Manual
+  configuration" and the same Python version as your virtualenv.
+
+  a) Virtualenv:
+       Enter: /home/<you>/.virtualenvs/asr_collecting
+
+  b) Code -> WSGI configuration file:
+       Replace the file's contents with a pointer to the project's WSGI:
+
+           import sys
+           project_home = '/home/<you>/ASR_Collecting/django-project'
+           if project_home not in sys.path:
+               sys.path.insert(0, project_home)
+
+           from wsgi import application
+
+       (django-project/wsgi.py already sets DJANGO_SETTINGS_MODULE=settings
+        and adds its own folder to sys.path, so this is all you need.)
+
+  c) Static files (URL -> directory):
+       URL: /static/    ->  /home/<you>/ASR_Collecting/django-project/static
+       URL: /media/     ->  /home/<you>/ASR_Collecting/django-project/media
+
+  d) Click "Reload" and visit http://<you>.pythonanywhere.com
+
+---------------------------------------------------------------------
+7. Ongoing updates
+---------------------------------------------------------------------
+  In a Bash console:
+      cd ~/ASR_Collecting
+      git pull
+      cd django-project
+      python manage.py migrate
+      python manage.py collectstatic --noinput
+  Then reload the web app from the Web tab.
+
+=====================================================================
+Notes
+=====================================================================
+  - On the free tier the site is forced to HTTPS and the domain is
+    always <username>.pythonanywhere.com.
+  - django-axes (login lockout) works fine with LocMemCache on the
+    free tier (single process).
+  - The rate-limit middleware (middleware.py) still applies globally.
+  - If you later upgrade to a paid (Hacker) account you can use MySQL
+    or PostgreSQL by setting DB_* values in .env.
