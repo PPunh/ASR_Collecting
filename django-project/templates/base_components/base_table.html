@@ -17,10 +17,10 @@
                     <tr style="border-bottom: 1px solid #f9f9f9; cursor: pointer;"
                         class="row-link"
                         data-url="{% url details_url_name pk=item.pk %}">
-                        <td class="w3-text-grey">{{ forloop.counter }}</td>
+                        <td class="w3-text-grey" data-label="#"> {{ forloop.counter }}</td>
 
                         {% for header in headers %}
-                            <td>
+                            <td {% if header.field == 'audio_file' %}class="audio-cell"{% endif %} data-label="{{ header.label }}">
                                 {% with value=item|get_obj_attr:header.field %}
 
                                     {% if header.field == 'title' %}
@@ -31,21 +31,23 @@
 
                                     {% elif header.field == 'audio_file' %}
                                         {% if value %}
-                                            <div class="w3-flex" style="display: flex; align-items: center; gap: 10px;">
-                                                <audio controls style="height: 36px; max-width: 240px;" class="w3-round">
-                                                    <source src="{{ value.url }}" type="audio/webm">
-                                                    <source src="{{ value.url }}" type="audio/mpeg">
-                                                    <source src="{{ value.url }}" type="audio/wav">
+                                            <div class="w3-flex" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                                <audio controls preload="metadata"
+                                                       style="height: 44px; width: 280px; max-width: 100%; min-width: 200px;"
+                                                       class="w3-round" onclick="event.stopPropagation()">
+                                                    <source src="{{ value.url }}">
                                                     Your browser does not support the audio element.
                                                 </audio>
                                                 {% if download_url_name %}
                                                     {% if item.status == 'approved' %}
                                                         <a href="{% url download_url_name pk=item.pk %}"
-                                                           class="w3-button w3-theme w3-small w3-round" title="Download audio">
+                                                           class="w3-button w3-theme w3-round" title="Download audio"
+                                                           onclick="event.stopPropagation()">
                                                             <i class="fa fa-download"></i>
                                                         </a>
                                                     {% else %}
-                                                        <button class="w3-button w3-light-grey w3-small w3-round" disabled title="Available after approval">
+                                                        <button class="w3-button w3-light-grey w3-round" disabled title="Available after approval"
+                                                                onclick="event.stopPropagation()">
                                                             <i class="fa fa-lock"></i>
                                                         </button>
                                                     {% endif %}

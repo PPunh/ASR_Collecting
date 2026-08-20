@@ -12,9 +12,11 @@
             <i class="fa fa-users w3-margin-right"></i>
            All Employees
         </a>
+        {% if user.is_superadmin %}
         <a href="{% url 'employee:add' %}" class="w3-bar-item w3-button w3-round-large">
             <i class="fa fa-plus w3-margin-right"></i>
             Add new employee
         </a>
+        {% endif %}
     </div>
 </div>

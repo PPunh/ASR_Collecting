@@ -101,7 +101,9 @@
         {% endfor %}
     </div>
 </div>
+{% if user.is_superadmin %}
 <a href="{% url 'recorder:add_category' %}" class="w3-button w3-round-large w3-padding w3-theme">
     <i class="fa fa-solid fa-plus w3-margin-right"></i>Add Category
 </a>
+{% endif %}
 {% endblock %}

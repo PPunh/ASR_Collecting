@@ -54,6 +54,18 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.username}"
 
+    def is_superadmin(self):
+        """Super Admin has full access"""
+        return self.is_superuser or self.role == self.PermissionChoice.SUPERADMIN
+
+    def is_authenticator(self):
+        """Authenticator can review/verify voice recording status"""
+        return self.is_superadmin() or self.role == self.PermissionChoice.AUTHENTICATORS
+
+    def is_normal_user(self):
+        """Normal user can only record and listen"""
+        return not self.is_superadmin() and not self.is_authenticator()
+
     def save(self, *args, **kwargs):
         if self.role == self.PermissionChoice.SUPERADMIN:
             self.is_superuser = True

@@ -75,3 +75,10 @@ class VoiceRecordingModel(AuditModel, models.Model):
 
     def __str__(self):
         return f"{self.title} Recording {self.id}"
+
+    class Meta:
+        verbose_name = "Voice Recording"
+        verbose_name_plural = "Voice Recordings"
+        permissions = [
+            ("can_review_recording", "Can review and verify voice recording status (approve/reject)"),
+        ]

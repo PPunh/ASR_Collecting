@@ -77,6 +77,7 @@
 <script>
     let mediaRecorder;
     let audioChunks = [];
+    let audioBlobType = 'audio/webm';
 
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
@@ -90,16 +91,21 @@
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
+            audioBlobType = mediaRecorder.mimeType || 'audio/webm';
             audioChunks = [];
 
             mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
 
             mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                // Use the browser's actual recording format (webm on Chrome/Android, mp4 on iOS Safari)
+                const mime = (mediaRecorder.mimeType || audioBlobType || 'audio/webm').split(';')[0];
+                const isMp4 = mime.includes('mp4') || mime.includes('mpeg');
+                const ext = isMp4 ? '.mp4' : '.webm';
+                const audioBlob = new Blob(audioChunks, { type: mime });
                 playback.src = URL.createObjectURL(audioBlob);
 
                 const formData = new FormData();
-                formData.append('audio', audioBlob, 'recording.webm');
+                formData.append('audio', audioBlob, 'recording' + ext);
                 formData.append('title', titleInput.value);
                 formData.append('script', scriptInput.value);
 

@@ -11,6 +11,15 @@ from . import forms
 class UserAdmin(BaseUserAdmin):
     model = models.User
 
+    fieldsets = BaseUserAdmin.fieldsets + (
+        ("Personal Info", {"fields": ("phone_number",)}),
+        ("ROLE", {"fields": ("role",)}),
+    )
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        ("Personal Info", {"fields": ("phone_number",)}),
+        ("ROLE", {"fields": ("role",)}),
+    )
+
     def display_modified(self, obj): # display modified in local time
         if obj.date_modified:
             return timezone.localtime(obj.date_modified).strftime('%Y-%m-%d %H:%M')
@@ -18,4 +27,4 @@ class UserAdmin(BaseUserAdmin):
 
     display_modified.short_description = "Modified"
 
-    list_display = ('username', 'email', 'first_name', 'last_name', 'display_modified','modified_by')
+    list_display = ('username', 'role', 'email', 'first_name', 'last_name', 'display_modified','modified_by')

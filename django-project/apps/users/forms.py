@@ -8,7 +8,7 @@ from . import models
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = models.User
-        fields = UserCreationForm.Meta.fields + ("email", "phone_number", "is_superuser")
+        fields = UserCreationForm.Meta.fields + ("email", "phone_number", "role", "is_superuser")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

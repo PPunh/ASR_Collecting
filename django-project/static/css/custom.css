@@ -6,3 +6,128 @@
     --card-bg: #ffffff;
     --error-color: #ef4444;
 }
+
+/* --- 2. Sidebar Backdrop (mobile overlay) --- */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+}
+
+.sidebar-backdrop.show {
+    display: block;
+}
+
+/* --- 3. Mobile Responsive --- */
+@media (max-width: 992px) {
+    /* Sidebar becomes an overlay drawer when opened */
+    .w3-sidebar {
+        width: 75% !important;
+        max-width: 320px;
+        z-index: 1001 !important;
+        box-shadow: 0 0 24px rgba(0, 0, 0, 0.35);
+    }
+}
+
+@media (max-width: 600px) {
+    .w3-main {
+        padding: 8px !important;
+    }
+
+    .w3-main .w3-container {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    /* --- Tables become stacked cards on mobile --- */
+    .w3-responsive {
+        overflow-x: hidden !important;
+    }
+
+    table.w3-table {
+        display: block;
+    }
+
+    table.w3-table thead {
+        display: none;
+    }
+
+    table.w3-table tbody,
+    table.w3-table tr {
+        display: block;
+        width: 100%;
+    }
+
+    table.w3-table tr {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        padding: 8px;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    table.w3-table td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 8px 10px;
+        border: none !important;
+        font-size: 0.9rem;
+    }
+
+    table.w3-table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
+        color: #777;
+        text-transform: uppercase;
+        flex-shrink: 0;
+    }
+
+    /* Audio cell gets the full width so it is easy to tap/play */
+    table.w3-table td.audio-cell {
+        display: block;
+        padding: 8px 4px;
+    }
+
+    table.w3-table td.audio-cell::before {
+        margin-bottom: 6px;
+    }
+
+    table.w3-table td.audio-cell audio {
+        width: 100% !important;
+        height: 48px !important;
+    }
+
+    /* Audio players & media fill the width on small screens */
+    audio {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Let inline flex layouts wrap on small screens */
+    main [style*="display: flex"] {
+        flex-wrap: wrap;
+    }
+
+    /* Keep card grids tidy */
+    .w3-card-4 .w3-container,
+    .w3-card-2 .w3-container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    /* Buttons in header/footer rows stack nicely */
+    main .w3-button {
+        margin-top: 4px;
+        margin-bottom: 4px;
+    }
+}

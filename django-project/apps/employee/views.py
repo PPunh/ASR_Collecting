@@ -3,13 +3,14 @@ from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
-from apps.common.mixins import SearchFilterMixin, MultipleInlineFormsetMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
+from apps.common.mixins import SearchFilterMixin, MultipleInlineFormsetMixin, SuperAdminRequiredMixin
 from .models import EmployeeModel
 from .forms import EmployeeForm
 from apps.users.models import User
 from apps.users.forms import CustomUserCreationForm
 
-class EmployeeListView(SearchFilterMixin, ListView):
+class EmployeeListView(LoginRequiredMixin, SearchFilterMixin, ListView):
 	model = EmployeeModel
 	template_name = "employee/list.html"
 	context_object_name = "items"
@@ -24,7 +25,7 @@ class EmployeeListView(SearchFilterMixin, ListView):
 		context["details_url_name"] = "employee:details"
 		return context
 
-class EmployeeCreateView(MultipleInlineFormsetMixin, CreateView):
+class EmployeeCreateView(SuperAdminRequiredMixin, MultipleInlineFormsetMixin, CreateView):
 	model = User
 	form_class = CustomUserCreationForm
 	template_name = "employee/add.html"

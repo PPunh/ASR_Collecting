@@ -4,16 +4,17 @@ import re
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, View, TemplateView, DetailView
 from django.http import JsonResponse, FileResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.db.models import Count
-from apps.common.mixins import SearchFilterMixin
+from apps.common.mixins import SearchFilterMixin, SuperAdminRequiredMixin
 from .models import VoiceRecordingModel, VoiceCategoryModel
 from .forms import VoiceCategoryForm
 
-class VoiceCategoryListView(SearchFilterMixin, ListView):
+class VoiceCategoryListView(LoginRequiredMixin, SearchFilterMixin, ListView):
     model = VoiceCategoryModel
     template_name = "recorder/voice_category.html"
     context_object_name = "items"
@@ -33,7 +34,7 @@ class VoiceCategoryListView(SearchFilterMixin, ListView):
         return context
 
 
-class VoiceCategoryCreateView(CreateView):
+class VoiceCategoryCreateView(SuperAdminRequiredMixin, CreateView):
     model = VoiceCategoryModel
     template_name = "recorder/create_category.html"
     form_class = VoiceCategoryForm
@@ -46,7 +47,7 @@ class VoiceCategoryCreateView(CreateView):
         return context
 
 
-class RecordingListView(SearchFilterMixin, ListView):
+class RecordingListView(LoginRequiredMixin, SearchFilterMixin, ListView):
     model = VoiceRecordingModel
     template_name = "recorder/voices_list.html"
     context_object_name = "items"
@@ -84,7 +85,7 @@ class RecordingListView(SearchFilterMixin, ListView):
 
 
 
-class RecordPageView(CreateView):
+class RecordPageView(LoginRequiredMixin, CreateView):
     """ Recording Page """
     model = VoiceRecordingModel
     template_name = "recorder/record_page.html"
@@ -115,7 +116,7 @@ class RecordPageView(CreateView):
         return context
 
 
-class UploadAudioView(View):
+class UploadAudioView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         audio = request.FILES.get('audio')
@@ -150,7 +151,7 @@ class UploadAudioView(View):
             'url': rec.audio_file.url,
         })
 
-class ReviewVoiceDetailView(DetailView):
+class ReviewVoiceDetailView(LoginRequiredMixin, DetailView):
     model = VoiceRecordingModel
     template_name = "recorder/review.html"
     context_object_name = "object"
@@ -164,6 +165,9 @@ class ReviewVoiceDetailView(DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+
+        if not request.user.is_authenticator():
+            return self.handle_no_permission()
 
         action = request.POST.get('action')
         comment = request.POST.get('comment', '').strip()
@@ -183,7 +187,7 @@ class ReviewVoiceDetailView(DetailView):
         return redirect('recorder:details', pk=self.object.pk)
 
 
-class DownloadAudioView(View):
+class DownloadAudioView(LoginRequiredMixin, View):
     """ Stream the recording as an attachment named after its title """
 
     def get(self, request, *args, **kwargs):

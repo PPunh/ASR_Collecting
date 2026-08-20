@@ -8,6 +8,15 @@ from django.apps import apps
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 
+# Role-based access control mixin
+class SuperAdminRequiredMixin(UserPassesTestMixin):
+    """ Allow only Super Admins for administrative tasks """
+    raise_exception = True
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_authenticated and user.is_superadmin()
+
 # Multipel Inline Formset Mixin
 class MultipleInlineFormsetMixin:
     """

@@ -13,8 +13,8 @@
             <div class="audio-player-box w3-padding-16 w3-margin-bottom">
                 <label class="w3-tiny w3-text-light-grey w3-bold w3-block w3-margin-bottom" style="letter-spacing: 1px;">AUDIO PREVIEW</label>
                 {% if object.audio_file %}
-                    <audio controls controlsList="nodownload">
-                        <source src="{{ object.audio_file.url }}" type="audio/mpeg">
+                    <audio controls controlsList="nodownload" style="width: 100%;">
+                        <source src="{{ object.audio_file.url }}">
                         Your browser does not support the audio element.
                     </audio>
                 {% else %}

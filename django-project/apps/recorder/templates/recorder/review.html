@@ -25,7 +25,7 @@
                     </label>
                     {% if object.audio_file %}
                         <audio controls controlsList="nodownload" style="width: 100%;">
-                            <source src="{{ object.audio_file.url }}" type="audio/mpeg">
+                            <source src="{{ object.audio_file.url }}">
                             Your browser does not support the audio element.
                         </audio>
                         <div class="w3-margin-top w3-center">
@@ -116,7 +116,7 @@
                         {{ object.comment|default:"No comments or notes provided." }}
                     </p>
                 </div>
-                {% if pending_status %}
+                {% if pending_status and user.is_authenticator %}
                         <!-- Action Form Section -->
                         <div class="w3-margin-top-24 w3-padding-16 w3-light-grey w3-round-large w3-border">
                             <form method="post" class="w3-container w3-padding-none">

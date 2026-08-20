@@ -2,8 +2,14 @@
 <!-- Top Navigation -->
 <nav class="w3-bar w3-white w3-card w3-top" style="height: 64px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; overflow: visible !important; z-index: 1000;">
 
-    <!-- Left: Brand -->
+    <!-- Left: Hamburger (mobile) + Brand -->
     <div class="w3-flex" style="display: flex; align-items: center;">
+        <button id="menuToggle"
+                class="w3-hide-large w3-button w3-large w3-text-theme w3-round-large"
+                style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px;"
+                onclick="toggleSidebar()" aria-label="Open menu">
+            <span class="material-icons">menu</span>
+        </button>
         <a href="{% url 'recorder:category' %}" class="w3-bar-item w3-button w3-hover-none w3-text-theme" style="display: flex; align-items: center; gap: 8px;">
             <img src="{% static 'images/alo.png' %}"
                  class="w3-image w3-round"
